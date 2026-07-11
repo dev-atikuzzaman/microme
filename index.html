@@ -81,9 +81,49 @@
           <input id="fontColorPicker" type="color" value="#1e1b2e" class="w-8 h-8 border rounded cursor-pointer">
         </label>
         <button id="printBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700">🖨️ প্রিন্ট</button>
+        <button id="fontManagerBtn" class="px-3 py-1.5 rounded-lg bg-fuchsia-700 text-white hover:bg-fuchsia-800">🔤 ফন্ট আপলোড করুন</button>
       </div>
     </div>
-    <p class="text-xs text-slate-500 mt-1">নোট: Nikosh/NikoshBan/Siyam Rupali ফন্ট আপনার ডিভাইসে ইনস্টল থাকলে সেটিই ব্যবহার হবে, না থাকলে Noto Sans Bengali ফলব্যাক দেখাবে (লাইসেন্স জনিত কারণে এই ফন্টগুলো সরাসরি অন্তর্ভুক্ত করা যায় না)।</p>
+    <p class="text-xs text-slate-500 mt-1">নোট: Nikosh/NikoshBan/Siyam Rupali ফন্ট আপনার ডিভাইসে ইনস্টল থাকলে সেটিই ব্যবহার হবে। অথবা "🔤 ফন্ট আপলোড করুন" বাটনে চেপে ফন্ট ফাইল (.ttf/.otf) সরাসরি অ্যাপে যুক্ত করে দিন — একবার আপলোড করলে পরবর্তীতে প্রতিবার এই ফোনে/এই অ্যাপে অটোমেটিক লোড হবে।</p>
+  </div>
+
+  <!-- Font Manager Panel -->
+  <div id="fontManagerPanel" class="hidden border-t bg-fuchsia-50">
+    <div class="max-w-7xl mx-auto px-3 py-4">
+      <h3 class="font-bold text-fuchsia-800 mb-1">🔤 কাস্টম ফন্ট আপলোড ব্যবস্থা</h3>
+      <p class="text-xs text-slate-600 mb-3">
+        Android ফোনে সিস্টেম-ওয়াইড ফন্ট ইনস্টল না করেই, নিচে আপনার ডাউনলোড করা .ttf/.otf ফাইল সিলেক্ট করুন — অ্যাপ নিজেই ফন্টটি সংরক্ষণ করে সাথে সাথে ব্যবহার শুরু করবে। ফন্ট ফাইল কীভাবে জোগাড় করবেন তার ধাপ নিচে দেওয়া আছে।
+      </p>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div class="bg-white rounded-lg p-3 shadow">
+          <div class="font-semibold mb-1">Siyam Rupali</div>
+          <input type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs w-full" onchange="uploadCustomFont(event,'siyamrupali')">
+          <div id="status_siyamrupali" class="text-xs mt-1 text-slate-500">কোনো কাস্টম ফন্ট আপলোড করা নেই</div>
+        </div>
+        <div class="bg-white rounded-lg p-3 shadow">
+          <div class="font-semibold mb-1">Nikosh</div>
+          <input type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs w-full" onchange="uploadCustomFont(event,'nikosh')">
+          <div id="status_nikosh" class="text-xs mt-1 text-slate-500">কোনো কাস্টম ফন্ট আপলোড করা নেই</div>
+        </div>
+        <div class="bg-white rounded-lg p-3 shadow">
+          <div class="font-semibold mb-1">NikoshBan</div>
+          <input type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs w-full" onchange="uploadCustomFont(event,'nikoshban')">
+          <div id="status_nikoshban" class="text-xs mt-1 text-slate-500">কোনো কাস্টম ফন্ট আপলোড করা নেই</div>
+        </div>
+      </div>
+      <details class="mt-4 bg-white rounded-lg p-3 shadow text-sm">
+        <summary class="font-semibold cursor-pointer text-fuchsia-700">📥 Android ফোনে ফন্ট ফাইল কীভাবে জোগাড় করবেন? (ধাপে ধাপে)</summary>
+        <ol class="list-decimal pl-5 mt-2 space-y-1.5 text-slate-700">
+          <li>ফোনের Chrome ব্রাউজারে <b>omicronlab.com</b>-এ যান (Avro Keyboard-এর অফিসিয়াল সাইট, যেখান থেকে Bangla ফন্টগুলো বিনামূল্যে বিতরণ করা হয়) এবং "Fonts" বা "Downloads" সেকশনে যান।</li>
+          <li>SiyamRupali.ttf / Nikosh.ttf / NikoshBan.ttf ফাইল খুঁজে ডাউনলোড করুন — এগুলো সাধারণত .zip আকারে থাকে।</li>
+          <li>ডাউনলোড হওয়া .zip ফাইলটি ফোনের "Files" বা "My Files" অ্যাপ দিয়ে খুলে Extract করুন (প্রয়োজনে "ZArchiver" জাতীয় ফ্রি অ্যাপ ব্যবহার করুন)।</li>
+          <li>এক্সট্র্যাক্ট হওয়ার পর .ttf ফাইলটি সাধারণত <b>Downloads</b> ফোল্ডারেই থাকবে।</li>
+          <li>এই অ্যাপে ফিরে এসে উপরের নির্দিষ্ট বক্সে (Siyam Rupali / Nikosh / NikoshBan) "Choose File" চেপে Downloads ফোল্ডার থেকে সেই .ttf ফাইলটি সিলেক্ট করুন।</li>
+          <li>আপলোড সম্পন্ন হলে স্ট্যাটাসে "✅ সক্রিয়" দেখাবে এবং উপরের ফন্ট ড্রপডাউন থেকে সেই ফন্ট সিলেক্ট করলেই পুরো অ্যাপে সেটি প্রয়োগ হবে। এটি ফোনে/ব্রাউজারেই সংরক্ষিত থাকে, তাই একবার আপলোড করলে পরের বার অ্যাপ খুললেও আর লাগবে না।</li>
+        </ol>
+        <p class="text-xs text-slate-500 mt-2">বিকল্প: "Avro Keyboard" বা "Bangla Font Pack" লিখে Google-এ সার্চ করলেও অফিসিয়াল ফ্রি সোর্স থেকে ডাউনলোড লিংক পাবেন। কপিরাইট সুরক্ষিত থার্ড-পার্টি সোর্স এড়িয়ে সবসময় অফিসিয়াল/ফ্রি-লাইসেন্সড সোর্স থেকে ডাউনলোড করুন।</p>
+      </details>
+    </div>
   </div>
 
   <!-- Tabs -->
@@ -325,6 +365,104 @@ document.getElementById('fontColorPicker').addEventListener('input', (e)=>{
   document.documentElement.style.setProperty('--app-font-color', e.target.value);
 });
 document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+/* ============================================================
+   CUSTOM FONT UPLOAD SYSTEM (works without Android system font install)
+============================================================ */
+const fontManagerBtn = document.getElementById('fontManagerBtn');
+const fontManagerPanel = document.getElementById('fontManagerPanel');
+fontManagerBtn.addEventListener('click', ()=>{
+  fontManagerPanel.classList.toggle('hidden');
+});
+
+const FONT_SLOTS = ['siyamrupali','nikosh','nikoshban'];
+const FONT_STORAGE_PREFIX = 'customFontData_';
+
+function mimeForExt(name){
+  const ext = name.split('.').pop().toLowerCase();
+  if(ext==='otf') return 'font/otf';
+  if(ext==='woff') return 'font/woff';
+  if(ext==='woff2') return 'font/woff2';
+  return 'font/ttf';
+}
+
+function injectFontFace(slot, dataUrl){
+  const familyMap = { siyamrupali:'SiyamRupali', nikosh:'Nikosh', nikoshban:'NikoshBan' };
+  let styleTag = document.getElementById('customFontStyle_'+slot);
+  if(!styleTag){
+    styleTag = document.createElement('style');
+    styleTag.id = 'customFontStyle_'+slot;
+    document.head.appendChild(styleTag);
+  }
+  // Higher priority than the local() @font-face declared in <style> above, since this comes later in the DOM.
+  styleTag.textContent = `@font-face{ font-family:'${familyMap[slot]}'; src:url('${dataUrl}'); font-display:swap; }`;
+}
+
+function updateFontStatus(slot, fileName){
+  const el = document.getElementById('status_'+slot);
+  if(!el) return;
+  if(fileName){
+    el.innerHTML = `✅ সক্রিয়: <span class="font-medium">${fileName}</span> <button class="text-red-500 underline ml-1" onclick="removeCustomFont('${slot}')">মুছুন</button>`;
+  } else {
+    el.textContent = 'কোনো কাস্টম ফন্ট আপলোড করা নেই';
+  }
+}
+
+function uploadCustomFont(evt, slot){
+  const file = evt.target.files[0];
+  if(!file) return;
+  if(file.size > 4.5*1024*1024){
+    alert('ফন্ট ফাইলটি অনেক বড় (4.5MB এর বেশি)। দয়া করে ছোট সাইজের .ttf/.otf ফাইল ব্যবহার করুন।');
+    evt.target.value='';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    let dataUrl = e.target.result;
+    // Ensure correct mime prefix even if browser guesses generic octet-stream
+    if(dataUrl.startsWith('data:application/octet-stream') || dataUrl.startsWith('data:;base64')){
+      const base64 = dataUrl.split(',')[1];
+      dataUrl = `data:${mimeForExt(file.name)};base64,${base64}`;
+    }
+    try{
+      localStorage.setItem(FONT_STORAGE_PREFIX+slot, JSON.stringify({name:file.name, data:dataUrl}));
+    }catch(err){
+      alert('সংরক্ষণ করতে সমস্যা হয়েছে — ফাইলটি হয়তো বড়। ছোট ফন্ট ফাইল দিয়ে চেষ্টা করুন।');
+      return;
+    }
+    injectFontFace(slot, dataUrl);
+    updateFontStatus(slot, file.name);
+    // Auto-switch to this font so the user immediately sees the result
+    const classMap = { siyamrupali:'font-siyamrupali', nikosh:'font-nikosh', nikoshban:'font-nikoshban' };
+    fontSelect.value = classMap[slot];
+    body.classList.remove('font-nikosh','font-nikoshban','font-siyamrupali','font-timesnewroman');
+    body.classList.add(classMap[slot]);
+    alert('ফন্ট সফলভাবে যুক্ত হয়েছে এবং প্রয়োগ করা হয়েছে!');
+    evt.target.value='';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeCustomFont(slot){
+  localStorage.removeItem(FONT_STORAGE_PREFIX+slot);
+  const styleTag = document.getElementById('customFontStyle_'+slot);
+  if(styleTag) styleTag.remove();
+  updateFontStatus(slot, null);
+}
+
+function loadStoredFonts(){
+  FONT_SLOTS.forEach(slot=>{
+    const raw = localStorage.getItem(FONT_STORAGE_PREFIX+slot);
+    if(raw){
+      try{
+        const {name, data} = JSON.parse(raw);
+        injectFontFace(slot, data);
+        updateFontStatus(slot, name);
+      }catch(e){ /* ignore corrupted entry */ }
+    }
+  });
+}
+loadStoredFonts();
 
 /* ============================================================
    TAB SWITCHING
