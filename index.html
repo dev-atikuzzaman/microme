@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#4338ca">
+<title>বহুমুখী তথ্যকোষ | Multi-Reference App</title>
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  @font-face{
+    font-family:'SiyamRupali';
+    src: local('Siyam Rupali'), local('SiyamRupali');
+  }
+  @font-face{
+    font-family:'Nikosh';
+    src: local('Nikosh');
+  }
+  @font-face{
+    font-family:'NikoshBan';
+    src: local('NikoshBan'), local('Nikosh Ban'), local('Nikosh Bangla');
+  }
+  :root{
+    --app-font-size: 16px;
+    --app-font-color: #1e1b2e;
+  }
+  html,body{
+    font-family: var(--app-font-family, 'NotoBengaliFallback','SiyamRupali','sans-serif');
+    font-size: var(--app-font-size);
+    color: var(--app-font-color);
+  }
+  @font-face{
+    font-family:'NotoBengaliFallback';
+    src: local('Noto Sans Bengali');
+  }
+  .font-nikosh{ font-family:'Nikosh','Noto Sans Bengali',sans-serif; }
+  .font-nikoshban{ font-family:'NikoshBan','Noto Sans Bengali',sans-serif; }
+  .font-siyamrupali{ font-family:'SiyamRupali','Noto Sans Bengali',sans-serif; }
+  .font-timesnewroman{ font-family:'Times New Roman', Times, serif; }
+
+  .tab-scroll::-webkit-scrollbar{ height:8px; }
+  .tab-scroll::-webkit-scrollbar-thumb{ background:#c7c7c7; border-radius:8px; }
+
+  .flip-card{ perspective:1000px; }
+  .flip-inner{ transition: transform .5s; transform-style:preserve-3d; }
+  .flip-card:hover .flip-inner{ transform: rotateY(180deg); }
+  .flip-front,.flip-back{ backface-visibility:hidden; position:absolute; inset:0; }
+  .flip-back{ transform: rotateY(180deg); }
+
+  @media print{
+    body *{ visibility:hidden; }
+    #printArea, #printArea *{ visibility:visible; }
+    #printArea{ position:absolute; left:0; top:0; width:100%; }
+    .no-print{ display:none !important; }
+  }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- ===================== HEADER / CONTROLS ===================== -->
+<header class="no-print sticky top-0 z-30 bg-white shadow-md">
+  <div class="max-w-7xl mx-auto px-3 py-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
+        📚 বহুমুখী তথ্যকোষ
+      </h1>
+      <div class="flex flex-wrap items-center gap-2 text-sm">
+        <label class="flex items-center gap-1">ফন্ট:
+          <select id="fontFamilySelect" class="border rounded px-2 py-1">
+            <option value="font-siyamrupali">Siyam Rupali</option>
+            <option value="font-nikosh">Nikosh</option>
+            <option value="font-nikoshban">NikoshBan</option>
+            <option value="font-timesnewroman">Times New Roman</option>
+          </select>
+        </label>
+        <label class="flex items-center gap-1">সাইজ:
+          <input id="fontSizeRange" type="range" min="12" max="32" value="16" class="align-middle">
+        </label>
+        <label class="flex items-center gap-1">রং:
+          <input id="fontColorPicker" type="color" value="#1e1b2e" class="w-8 h-8 border rounded cursor-pointer">
+        </label>
+        <button id="printBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700">🖨️ প্রিন্ট</button>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500 mt-1">নোট: Nikosh/NikoshBan/Siyam Rupali ফন্ট আপনার ডিভাইসে ইনস্টল থাকলে সেটিই ব্যবহার হবে, না থাকলে Noto Sans Bengali ফলব্যাক দেখাবে (লাইসেন্স জনিত কারণে এই ফন্টগুলো সরাসরি অন্তর্ভুক্ত করা যায় না)।</p>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="tab-scroll overflow-x-auto border-t">
+    <div class="flex w-max sm:w-full">
+      <button data-tab="t1" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition">০-১০০ সংখ্যা</button>
+      <button data-tab="t2" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-rose-500 hover:bg-rose-600 transition">১-৩১ ক্রম</button>
+      <button data-tab="t3" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-amber-500 hover:bg-amber-600 transition">সপ্তাহ</button>
+      <button data-tab="t4" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition">মাস (ইং/বাং/আরবি)</button>
+      <button data-tab="t5" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-teal-600 hover:bg-teal-700 transition">ঋতু</button>
+      <button data-tab="t6" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-purple-600 hover:bg-purple-700 transition">রোমান সংখ্যা</button>
+      <button data-tab="t7" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-sky-600 hover:bg-sky-700 transition">ইউনিট কনভার্টার</button>
+      <button data-tab="t8" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-pink-600 hover:bg-pink-700 transition">কাস্টম তথ্য</button>
+    </div>
+  </nav>
+</header>
+
+<main id="printArea" class="max-w-7xl mx-auto p-3 sm:p-5">
+
+  <!-- ================= TAB 1: NUMBERS 0-100 ================= -->
+  <section id="t1" class="tab-panel">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-4">
+      <input id="t1Search" type="text" placeholder="🔍 যেকোনো ভাবে সার্চ করুন (0, Zero, শূন্য, ০ ...)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
+      <button onclick="exportTableCSV('t1Table','numbers')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
+      <button onclick="exportTableXLSX('t1Table','numbers')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+        Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t1Table')">
+      </label>
+    </div>
+    <div class="overflow-x-auto rounded-xl shadow bg-white">
+      <table id="t1Table" class="w-full text-sm sm:text-base">
+        <thead class="bg-indigo-600 text-white sticky top-0">
+          <tr>
+            <th class="p-2 text-left">সংখ্যা (Digit)</th>
+            <th class="p-2 text-left">Number</th>
+            <th class="p-2 text-left">English Word</th>
+            <th class="p-2 text-left">বাংলা শব্দ</th>
+            <th class="p-2 text-left">বাংলা সংখ্যা</th>
+          </tr>
+        </thead>
+        <tbody id="t1Body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= TAB 2: ORDINALS 1-31 ================= -->
+  <section id="t2" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-4">
+      <input id="t2Search" type="text" placeholder="🔍 সার্চ করুন (1, First, প্রথম, ১ম ...)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
+      <button onclick="exportTableCSV('t2Table','ordinals')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
+      <button onclick="exportTableXLSX('t2Table','ordinals')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+        Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t2Table')">
+      </label>
+    </div>
+    <div class="overflow-x-auto rounded-xl shadow bg-white">
+      <table id="t2Table" class="w-full text-sm sm:text-base">
+        <thead class="bg-rose-500 text-white sticky top-0">
+          <tr>
+            <th class="p-2 text-left">Number</th>
+            <th class="p-2 text-left">English Ordinal</th>
+            <th class="p-2 text-left">English Word</th>
+            <th class="p-2 text-left">বাংলা ক্রমবাচক (সংখ্যায়)</th>
+            <th class="p-2 text-left">বাংলা ক্রমবাচক (কথায়)</th>
+          </tr>
+        </thead>
+        <tbody id="t2Body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= TAB 3: WEEKDAYS ================= -->
+  <section id="t3" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-4">
+      <button onclick="exportTableCSV('t3Table','weekdays')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
+      <button onclick="exportTableXLSX('t3Table','weekdays')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+        Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t3Table')">
+      </label>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="t3Cards"></div>
+    <table id="t3Table" class="hidden"><thead><tr><th>English</th><th>বাংলা</th></tr></thead><tbody id="t3Body"></tbody></table>
+  </section>
+
+  <!-- ================= TAB 4: MONTHS ================= -->
+  <section id="t4" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-3">
+      <button onclick="exportTableCSV('t4TableEn','en_months')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">ইংরেজি মাস CSV</button>
+      <button onclick="exportTableCSV('t4TableBn','bn_months')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">বাংলা মাস CSV</button>
+      <button onclick="exportTableCSV('t4TableAr','ar_months')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">আরবি মাস CSV</button>
+      <button onclick="exportTableXLSX('t4TableEn','en_months')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export (সব)</button>
+    </div>
+    <h2 class="text-lg font-bold text-emerald-700 mb-2">🗓️ ইংরেজি মাস (English Months)</h2>
+    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+      <table id="t4TableEn" class="w-full text-sm sm:text-base">
+        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">English</th><th class="p-2 text-left">বাংলা উচ্চারণ</th></tr></thead>
+        <tbody id="t4BodyEn"></tbody>
+      </table>
+    </div>
+    <h2 class="text-lg font-bold text-emerald-700 mb-2">🌾 বাংলা মাস (Bengali Calendar Months)</h2>
+    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+      <table id="t4TableBn" class="w-full text-sm sm:text-base">
+        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">আনুমানিক গ্রেগরিয়ান সময়কাল</th></tr></thead>
+        <tbody id="t4BodyBn"></tbody>
+      </table>
+    </div>
+    <h2 class="text-lg font-bold text-emerald-700 mb-2">🌙 আরবি (হিজরি) মাস</h2>
+    <div class="overflow-x-auto rounded-xl shadow bg-white">
+      <table id="t4TableAr" class="w-full text-sm sm:text-base">
+        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">আরবি/বাংলা নাম</th><th class="p-2 text-left">English</th></tr></thead>
+        <tbody id="t4BodyAr"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= TAB 5: SEASONS ================= -->
+  <section id="t5" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-3">
+      <button onclick="exportTableCSV('t5TableBn','bn_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">বাংলা ঋতু CSV</button>
+      <button onclick="exportTableCSV('t5TableEn','en_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">English Seasons CSV</button>
+      <button onclick="exportTableCSV('t5TableAr','ar_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">আরবি ঋতু CSV</button>
+    </div>
+    <h2 class="text-lg font-bold text-teal-700 mb-2">বাংলা ৬ ঋতু</h2>
+    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+      <table id="t5TableBn" class="w-full text-sm sm:text-base">
+        <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">ঋতু</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">English Meaning</th></tr></thead>
+        <tbody id="t5BodyBn"></tbody>
+      </table>
+    </div>
+    <h2 class="text-lg font-bold text-teal-700 mb-2">English Seasons</h2>
+    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+      <table id="t5TableEn" class="w-full text-sm sm:text-base">
+        <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">Season</th><th class="p-2 text-left">বাংলা অর্থ</th><th class="p-2 text-left">Months (approx.)</th></tr></thead>
+        <tbody id="t5BodyEn"></tbody>
+      </table>
+    </div>
+    <h2 class="text-lg font-bold text-teal-700 mb-2">আরবি ঋতু</h2>
+    <div class="overflow-x-auto rounded-xl shadow bg-white">
+      <table id="t5TableAr" class="w-full text-sm sm:text-base">
+        <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">আরবি নাম</th><th class="p-2 text-left">উচ্চারণ</th><th class="p-2 text-left">বাংলা অর্থ</th></tr></thead>
+        <tbody id="t5BodyAr"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= TAB 6: ROMAN NUMERALS ================= -->
+  <section id="t6" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-3">
+      <input id="t6Search" type="text" placeholder="🔍 সার্চ করুন (সংখ্যা বা রোমান)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
+      <button onclick="exportTableCSV('t6Table','roman')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
+      <button onclick="exportTableXLSX('t6Table','roman')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
+    </div>
+    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+      <table id="t6Table" class="w-full text-sm sm:text-base">
+        <thead class="bg-purple-600 text-white sticky top-0"><tr><th class="p-2 text-left">সংখ্যা</th><th class="p-2 text-left">Roman Numeral</th></tr></thead>
+        <tbody id="t6Body"></tbody>
+      </table>
+    </div>
+    <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+      <h3 class="font-bold text-purple-700 mb-2">১০০-এর বেশি বড় রোমান সংখ্যা লেখার নিয়ম</h3>
+      <ul class="list-disc pl-5 space-y-1 text-sm">
+        <li>মূল প্রতীক: I=１, V=৫, X=১০, L=৫০, C=১০০, D=৫০০, M=১০০০।</li>
+        <li>একই প্রতীক পরপর সর্বোচ্চ ৩ বার লেখা যায় (যেমন III=৩), তবে V, L, D কখনো পুনরাবৃত্তি হয় না।</li>
+        <li>ছোট প্রতীক বড় প্রতীকের আগে বসলে বিয়োগ হয় (যেমন IV=৪, IX=৯, XL=৪০, XC=৯০, CD=৪০০, CM=৯০০)।</li>
+        <li>১০০০-এর বেশি সংখ্যার জন্য প্রতীকের উপর একটি রেখা (vinculum) দিলে তার মান ১০০০ গুণ হয়ে যায় — যেমন V̄ = ৫,০০০, X̄ = ১০,০০০, M̄ = ১০,০০,০০০।</li>
+        <li>উদাহরণ: ২০২৬ = MMXXVI, ১৯৯৯ = MCMXCIX, ৪৯৯৯ = MMMMCMXCIX বা IV̄CMXCIX।</li>
+        <li>রোমান পদ্ধতিতে শূন্য (0) বা ঋণাত্মক সংখ্যা প্রকাশের কোনো প্রতীক নেই।</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= TAB 7: UNIT CONVERTER ================= -->
+  <section id="t7" class="tab-panel hidden">
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="bg-white rounded-xl shadow p-4">
+        <h3 class="font-bold text-sky-700 mb-3">📏 Length (দৈর্ঘ্য)</h3>
+        <div id="conv_length" class="converter-block" data-units='{"m":1,"cm":0.01,"mm":0.001,"inch":0.0254,"ft":0.3048}'></div>
+      </div>
+      <div class="bg-white rounded-xl shadow p-4">
+        <h3 class="font-bold text-sky-700 mb-3">🧊 Volume (গ্যাস/আয়তন)</h3>
+        <div id="conv_volume" class="converter-block" data-units='{"cubic meter (m³)":1,"cubic feet (ft³)":0.0283168,"MSCM":1000,"MMSCM":1000000,"MSCF":28.3168,"MMSCF":28316.8}'></div>
+      </div>
+      <div class="bg-white rounded-xl shadow p-4">
+        <h3 class="font-bold text-sky-700 mb-3">🌡️ Temperature (তাপমাত্রা)</h3>
+        <div id="conv_temp" class="converter-block-temp"></div>
+      </div>
+      <div class="bg-white rounded-xl shadow p-4">
+        <h3 class="font-bold text-sky-700 mb-3">🧭 Pressure (চাপ)</h3>
+        <div id="conv_pressure" class="converter-block" data-units='{"bar":1,"atm":1.01325,"psi":0.0689476,"kg/cm²":0.980665}'></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB 8: CUSTOM INFO ================= -->
+  <section id="t8" class="tab-panel hidden">
+    <div class="no-print bg-white rounded-xl shadow p-4 mb-4">
+      <h3 class="font-bold text-pink-700 mb-3">➕ নতুন তথ্য যোগ করুন</h3>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <input id="c_title" type="text" placeholder="শিরোনাম / Title" class="border rounded-lg px-3 py-2">
+        <select id="c_category" class="border rounded-lg px-3 py-2">
+          <option value="সাধারণ">সাধারণ (General)</option>
+          <option value="গুরুত্বপূর্ণ">গুরুত্বপূর্ণ (Important)</option>
+          <option value="রেফারেন্স">রেফারেন্স (Reference)</option>
+          <option value="অন্যান্য">অন্যান্য (Other)</option>
+        </select>
+        <textarea id="c_text" placeholder="বিস্তারিত তথ্য লিখুন..." class="border rounded-lg px-3 py-2 sm:col-span-2" rows="3"></textarea>
+        <input id="c_image" type="file" accept="image/*" class="border rounded-lg px-3 py-2 sm:col-span-2">
+      </div>
+      <button onclick="addCustomEntry()" class="mt-3 px-4 py-2 bg-pink-600 text-white rounded-lg">যোগ করুন</button>
+    </div>
+    <div class="no-print flex flex-wrap items-center gap-2 mb-4">
+      <button onclick="exportCustomCSV()" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
+      <button onclick="exportCustomXLSX()" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+        Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importCustom(event)">
+      </label>
+    </div>
+    <div id="customList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </section>
+
+</main>
+
+<script>
+/* ============================================================
+   GLOBAL: FONT / SIZE / COLOR CONTROLS
+============================================================ */
+const body = document.body;
+const fontSelect = document.getElementById('fontFamilySelect');
+fontSelect.addEventListener('change', () => {
+  body.classList.remove('font-nikosh','font-nikoshban','font-siyamrupali','font-timesnewroman');
+  body.classList.add(fontSelect.value);
+});
+body.classList.add('font-siyamrupali');
+
+document.getElementById('fontSizeRange').addEventListener('input', (e)=>{
+  document.documentElement.style.setProperty('--app-font-size', e.target.value+'px');
+});
+document.getElementById('fontColorPicker').addEventListener('input', (e)=>{
+  document.documentElement.style.setProperty('--app-font-color', e.target.value);
+});
+document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+/* ============================================================
+   TAB SWITCHING
+============================================================ */
+const tabButtons = document.querySelectorAll('.tab-btn');
+const panels = document.querySelectorAll('.tab-panel');
+tabButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    panels.forEach(p=>p.classList.add('hidden'));
+    document.getElementById(btn.dataset.tab).classList.remove('hidden');
+    tabButtons.forEach(b=>b.classList.remove('ring-4','ring-offset-2'));
+    btn.classList.add('ring-4','ring-offset-2');
+  });
+});
+tabButtons[0].click();
+
+/* ============================================================
+   TAB 1: NUMBERS 0-100
+============================================================ */
+const enOnes = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
+  'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const enTens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function englishWord(n){
+  if(n < 20) return enOnes[n];
+  if(n < 100){
+    const t = Math.floor(n/10), o = n%10;
+    return enTens[t] + (o? '-'+enOnes[o].toLowerCase() : '');
+  }
+  return 'One Hundred';
+}
+const bnWords = ["শূন্য","এক","দুই","তিন","চার","পাঁচ","ছয়","সাত","আট","নয়","দশ",
+"এগারো","বারো","তেরো","চৌদ্দ","পনেরো","ষোলো","সতেরো","আঠারো","ঊনিশ","বিশ",
+"একুশ","বাইশ","তেইশ","চব্বিশ","পঁচিশ","ছাব্বিশ","সাতাশ","আটাশ","ঊনত্রিশ","ত্রিশ",
+"একত্রিশ","বত্রিশ","তেত্রিশ","চৌত্রিশ","পঁয়ত্রিশ","ছত্রিশ","সাঁইত্রিশ","আটত্রিশ","ঊনচল্লিশ","চল্লিশ",
+"একচল্লিশ","বিয়াল্লিশ","তেতাল্লিশ","চুয়াল্লিশ","পঁয়তাল্লিশ","ছেচল্লিশ","সাতচল্লিশ","আটচল্লিশ","ঊনপঞ্চাশ","পঞ্চাশ",
+"একান্ন","বায়ান্ন","তিপ্পান্ন","চুয়ান্ন","পঞ্চান্ন","ছাপ্পান্ন","সাতান্ন","আটান্ন","ঊনষাট","ষাট",
+"একষট্টি","বাষট্টি","তেষট্টি","চৌষট্টি","পঁয়ষট্টি","ছেষট্টি","সাতষট্টি","আটষট্টি","ঊনসত্তর","সত্তর",
+"একাত্তর","বাহাত্তর","তিয়াত্তর","চুয়াত্তর","পঁচাত্তর","ছিয়াত্তর","সাতাত্তর","আটাত্তর","ঊনআশি","আশি",
+"একাশি","বিরাশি","তিরাশি","চুরাশি","পঁচাশি","ছিয়াশি","সাতাশি","আটাশি","ঊননব্বই","নব্বই",
+"একানব্বই","বিরানব্বই","তিরানব্বই","চুরানব্বই","পঁচানব্বই","ছিয়ানব্বই","সাতানব্বই","আটানব্বই","নিরানব্বই","একশত"];
+const bnDigitMap = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+function toBnDigit(n){ return String(n).split('').map(c=>bnDigitMap[c]||c).join(''); }
+
+const t1Body = document.getElementById('t1Body');
+for(let i=0;i<=100;i++){
+  const tr = document.createElement('tr');
+  tr.className = i%2===0 ? 'bg-indigo-50' : 'bg-white';
+  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${i}</td><td class="p-2">${englishWord(i)}</td><td class="p-2">${bnWords[i]}</td><td class="p-2">${toBnDigit(i)}</td>`;
+  tr.dataset.search = `${i} ${englishWord(i)} ${bnWords[i]} ${toBnDigit(i)}`.toLowerCase();
+  t1Body.appendChild(tr);
+}
+document.getElementById('t1Search').addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  [...t1Body.children].forEach(tr=>{
+    tr.style.display = tr.dataset.search.includes(q) ? '' : 'none';
+  });
+});
+
+/* ============================================================
+   TAB 2: ORDINALS 1-31
+============================================================ */
+const enOrdinalWords = ["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth",
+"Eleventh","Twelfth","Thirteenth","Fourteenth","Fifteenth","Sixteenth","Seventeenth","Eighteenth","Nineteenth","Twentieth",
+"Twenty-First","Twenty-Second","Twenty-Third","Twenty-Fourth","Twenty-Fifth","Twenty-Sixth","Twenty-Seventh","Twenty-Eighth","Twenty-Ninth","Thirtieth","Thirty-First"];
+const bnOrdinalWords = ["প্রথম","দ্বিতীয়","তৃতীয়","চতুর্থ","পঞ্চম","ষষ্ঠ","সপ্তম","অষ্টম","নবম","দশম",
+"একাদশ","দ্বাদশ","ত্রয়োদশ","চতুর্দশ","পঞ্চদশ","ষোড়শ","সপ্তদশ","অষ্টাদশ","ঊনবিংশ","বিংশতম",
+"একবিংশতম","দ্বাবিংশতম","ত্রয়োবিংশতম","চতুর্বিংশতম","পঞ্চবিংশতম","ষড়বিংশতম","সপ্তবিংশতম","অষ্টাবিংশতম","ঊনত্রিংশতম","ত্রিংশতম","একত্রিংশতম"];
+function enOrdinalSuffix(n){
+  if(n%100>=11 && n%100<=13) return n+'th';
+  switch(n%10){case 1:return n+'st';case 2:return n+'nd';case 3:return n+'rd';default:return n+'th';}
+}
+const bnOrdinalNumeral = {1:'১ম',2:'২য়',3:'৩য়',4:'৪র্থ',5:'৫ম',6:'৬ষ্ঠ',7:'৭ম',8:'৮ম',9:'৯ম',10:'১০ম'};
+function bnOrdinalDigit(n){
+  return bnOrdinalNumeral[n] || (toBnDigit(n)+'তম');
+}
+const t2Body = document.getElementById('t2Body');
+for(let i=1;i<=31;i++){
+  const tr = document.createElement('tr');
+  tr.className = i%2===0 ? 'bg-rose-50' : 'bg-white';
+  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${enOrdinalSuffix(i)}</td><td class="p-2">${enOrdinalWords[i-1]}</td><td class="p-2">${bnOrdinalDigit(i)}</td><td class="p-2">${bnOrdinalWords[i-1]}</td>`;
+  tr.dataset.search = `${i} ${enOrdinalSuffix(i)} ${enOrdinalWords[i-1]} ${bnOrdinalDigit(i)} ${bnOrdinalWords[i-1]}`.toLowerCase();
+  t2Body.appendChild(tr);
+}
+document.getElementById('t2Search').addEventListener('input',(e)=>{
+  const q=e.target.value.trim().toLowerCase();
+  [...t2Body.children].forEach(tr=>{ tr.style.display = tr.dataset.search.includes(q)?'':'none'; });
+});
+
+/* ============================================================
+   TAB 3: WEEKDAYS
+============================================================ */
+const weekdays = [
+  ["Sunday","রবিবার"],["Monday","সোমবার"],["Tuesday","মঙ্গলবার"],
+  ["Wednesday","বুধবার"],["Thursday","বৃহস্পতিবার"],["Friday","শুক্রবার"],["Saturday","শনিবার"]
+];
+const t3Cards = document.getElementById('t3Cards');
+const t3Body = document.getElementById('t3Body');
+const weekColors = ['bg-amber-100','bg-amber-200','bg-amber-100','bg-amber-200','bg-amber-100','bg-amber-200','bg-amber-100'];
+weekdays.forEach(([en,bn],idx)=>{
+  const div = document.createElement('div');
+  div.className = `${weekColors[idx]} rounded-xl shadow p-4 text-center`;
+  div.innerHTML = `<div class="text-2xl font-bold">${bn}</div><div class="text-slate-600">${en}</div>`;
+  t3Cards.appendChild(div);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td class="p-2">${en}</td><td class="p-2">${bn}</td>`;
+  t3Body.appendChild(tr);
+});
+
+/* ============================================================
+   TAB 4: MONTHS
+============================================================ */
+const enMonths = [["January","জানুয়ারি"],["February","ফেব্রুয়ারি"],["March","মার্চ"],["April","এপ্রিল"],
+["May","মে"],["June","জুন"],["July","জুলাই"],["August","আগস্ট"],["September","সেপ্টেম্বর"],
+["October","অক্টোবর"],["November","নভেম্বর"],["December","ডিসেম্বর"]];
+const bnMonths = [["বৈশাখ","মধ্য এপ্রিল - মধ্য মে"],["জ্যৈষ্ঠ","মধ্য মে - মধ্য জুন"],["আষাঢ়","মধ্য জুন - মধ্য জুলাই"],
+["শ্রাবণ","মধ্য জুলাই - মধ্য আগস্ট"],["ভাদ্র","মধ্য আগস্ট - মধ্য সেপ্টেম্বর"],["আশ্বিন","মধ্য সেপ্টেম্বর - মধ্য অক্টোবর"],
+["কার্তিক","মধ্য অক্টোবর - মধ্য নভেম্বর"],["অগ্রহায়ণ","মধ্য নভেম্বর - মধ্য ডিসেম্বর"],["পৌষ","মধ্য ডিসেম্বর - মধ্য জানুয়ারি"],
+["মাঘ","মধ্য জানুয়ারি - মধ্য ফেব্রুয়ারি"],["ফাল্গুন","মধ্য ফেব্রুয়ারি - মধ্য মার্চ"],["চৈত্র","মধ্য মার্চ - মধ্য এপ্রিল"]];
+const arMonths = [["মুহাররম","Muharram"],["সফর","Safar"],["রবিউল আউয়াল","Rabi' al-awwal"],["রবিউস সানি","Rabi' al-thani"],
+["জমাদিউল আউয়াল","Jumada al-awwal"],["জমাদিউস সানি","Jumada al-thani"],["রজব","Rajab"],["শাবান","Sha'ban"],
+["রমজান","Ramadan"],["শাওয়াল","Shawwal"],["জিলক্বদ","Dhu al-Qi'dah"],["জিলহজ্জ","Dhu al-Hijjah"]];
+function fillMonthTable(bodyId, arr, useIndex){
+  const tbody = document.getElementById(bodyId);
+  arr.forEach((row,idx)=>{
+    const tr=document.createElement('tr');
+    tr.className = idx%2===0?'bg-emerald-50':'bg-white';
+    tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+fillMonthTable('t4BodyEn', enMonths);
+fillMonthTable('t4BodyBn', bnMonths);
+fillMonthTable('t4BodyAr', arMonths);
+
+/* ============================================================
+   TAB 5: SEASONS
+============================================================ */
+const bnSeasons = [["গ্রীষ্ম","বৈশাখ-জ্যৈষ্ঠ","Summer"],["বর্ষা","আষাঢ়-শ্রাবণ","Monsoon"],["শরৎ","ভাদ্র-আশ্বিন","Autumn"],
+["হেমন্ত","কার্তিক-অগ্রহায়ণ","Late Autumn"],["শীত","পৌষ-মাঘ","Winter"],["বসন্ত","ফাল্গুন-চৈত্র","Spring"]];
+const enSeasons = [["Spring","বসন্ত","March-May"],["Summer","গ্রীষ্ম","June-August"],["Autumn / Fall","শরৎ","September-November"],["Winter","শীত","December-February"]];
+const arSeasons = [["الربيع","Al-Rabi'","বসন্ত (Spring)"],["الصيف","Al-Sayf","গ্রীষ্ম (Summer)"],["الخريف","Al-Kharif","শরৎ (Autumn)"],["الشتاء","Al-Shita'","শীত (Winter)"]];
+function fillSeasonTable(bodyId,arr){
+  const tbody = document.getElementById(bodyId);
+  arr.forEach((row,idx)=>{
+    const tr=document.createElement('tr');
+    tr.className = idx%2===0?'bg-teal-50':'bg-white';
+    tr.innerHTML = `<td class="p-2 font-semibold">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2">${row[2]}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+fillSeasonTable('t5BodyBn', bnSeasons);
+fillSeasonTable('t5BodyEn', enSeasons);
+fillSeasonTable('t5BodyAr', arSeasons);
+
+/* ============================================================
+   TAB 6: ROMAN NUMERALS
+============================================================ */
+function toRoman(num){
+  const vals = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+  let res='';
+  for(const [v,s] of vals){ while(num>=v){ res+=s; num-=v; } }
+  return res;
+}
+const t6Body = document.getElementById('t6Body');
+for(let i=1;i<=100;i++){
+  const tr=document.createElement('tr');
+  tr.className = i%2===0?'bg-purple-50':'bg-white';
+  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2 font-mono text-lg">${toRoman(i)}</td>`;
+  tr.dataset.search = `${i} ${toRoman(i)}`.toLowerCase();
+  t6Body.appendChild(tr);
+}
+document.getElementById('t6Search').addEventListener('input',(e)=>{
+  const q=e.target.value.trim().toLowerCase();
+  [...t6Body.children].forEach(tr=>{ tr.style.display = tr.dataset.search.includes(q)?'':'none'; });
+});
+
+/* ============================================================
+   TAB 7: UNIT CONVERTER
+============================================================ */
+document.querySelectorAll('.converter-block').forEach(block=>{
+  const units = JSON.parse(block.dataset.units);
+  const keys = Object.keys(units);
+  block.innerHTML = `
+    <div class="flex flex-col gap-2">
+      <input type="number" value="1" class="conv-input border rounded-lg px-3 py-2" placeholder="মান লিখুন">
+      <div class="flex gap-2 items-center">
+        <select class="conv-from border rounded-lg px-2 py-2 flex-1">${keys.map(k=>`<option value="${k}">${k}</option>`).join('')}</select>
+        <span>➡️</span>
+        <select class="conv-to border rounded-lg px-2 py-2 flex-1">${keys.map((k,idx)=>`<option value="${k}" ${idx===1?'selected':''}>${k}</option>`).join('')}</select>
+      </div>
+      <div class="conv-result text-lg font-bold text-sky-700 bg-sky-50 rounded-lg p-2">ফলাফল: -</div>
+    </div>`;
+  function calc(){
+    const val = parseFloat(block.querySelector('.conv-input').value)||0;
+    const from = block.querySelector('.conv-from').value;
+    const to = block.querySelector('.conv-to').value;
+    const base = val * units[from];
+    const result = base / units[to];
+    block.querySelector('.conv-result').textContent = `ফলাফল: ${result.toLocaleString(undefined,{maximumFractionDigits:6})} ${to}`;
+  }
+  block.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calc));
+  calc();
+});
+// Temperature (non-linear)
+const tempBlock = document.getElementById('conv_temp');
+tempBlock.innerHTML = `
+  <div class="flex flex-col gap-2">
+    <input type="number" value="25" class="t-input border rounded-lg px-3 py-2">
+    <div class="flex gap-2 items-center">
+      <select class="t-from border rounded-lg px-2 py-2 flex-1"><option value="C">°C (Celsius)</option><option value="F">°F (Fahrenheit)</option></select>
+      <span>➡️</span>
+      <select class="t-to border rounded-lg px-2 py-2 flex-1"><option value="F">°F (Fahrenheit)</option><option value="C">°C (Celsius)</option></select>
+    </div>
+    <div class="t-result text-lg font-bold text-sky-700 bg-sky-50 rounded-lg p-2">ফলাফল: -</div>
+  </div>`;
+function tempCalc(){
+  const val = parseFloat(tempBlock.querySelector('.t-input').value)||0;
+  const from = tempBlock.querySelector('.t-from').value;
+  const to = tempBlock.querySelector('.t-to').value;
+  let result;
+  if(from===to) result = val;
+  else if(from==='C'&&to==='F') result = val*9/5+32;
+  else result = (val-32)*5/9;
+  tempBlock.querySelector('.t-result').textContent = `ফলাফল: ${result.toLocaleString(undefined,{maximumFractionDigits:4})} °${to}`;
+}
+tempBlock.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',tempCalc));
+tempCalc();
+
+/* ============================================================
+   TAB 8: CUSTOM DATA (localStorage)
+============================================================ */
+const CUSTOM_KEY='customInfoEntries_v1';
+function loadCustom(){ try{ return JSON.parse(localStorage.getItem(CUSTOM_KEY))||[]; }catch(e){ return []; } }
+function saveCustom(list){ localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); }
+function renderCustom(){
+  const list = loadCustom();
+  const container = document.getElementById('customList');
+  container.innerHTML='';
+  if(list.length===0){ container.innerHTML = `<p class="text-slate-400 col-span-full text-center py-8">এখনো কোনো তথ্য যোগ করা হয়নি।</p>`; return; }
+  list.forEach((item,idx)=>{
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-xl shadow p-4';
+    div.innerHTML = `
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-xs px-2 py-1 rounded-full bg-pink-100 text-pink-700 font-semibold">${item.category||''}</span>
+        <button class="no-print text-red-500 text-sm" onclick="deleteCustom(${idx})">🗑️</button>
+      </div>
+      <h4 class="font-bold text-lg mb-1">${item.title||''}</h4>
+      <p class="text-sm text-slate-600 whitespace-pre-wrap mb-2">${item.text||''}</p>
+      ${item.image ? `<img src="${item.image}" class="rounded-lg max-h-40 object-cover w-full">` : ''}
+    `;
+    container.appendChild(div);
+  });
+}
+function addCustomEntry(){
+  const title = document.getElementById('c_title').value.trim();
+  const category = document.getElementById('c_category').value;
+  const text = document.getElementById('c_text').value.trim();
+  const fileInput = document.getElementById('c_image');
+  const file = fileInput.files[0];
+  function pushEntry(imageData){
+    const list = loadCustom();
+    list.push({title,category,text,image:imageData||''});
+    saveCustom(list);
+    renderCustom();
+    document.getElementById('c_title').value='';
+    document.getElementById('c_text').value='';
+    fileInput.value='';
+  }
+  if(!title && !text){ alert('অন্তত শিরোনাম অথবা তথ্য লিখুন।'); return; }
+  if(file){
+    const reader = new FileReader();
+    reader.onload = ()=> pushEntry(reader.result);
+    reader.readAsDataURL(file);
+  } else { pushEntry(null); }
+}
+function deleteCustom(idx){
+  const list = loadCustom();
+  list.splice(idx,1);
+  saveCustom(list);
+  renderCustom();
+}
+renderCustom();
+
+/* ============================================================
+   EXPORT: CSV / XLSX (generic table)
+============================================================ */
+function tableToAOA(tableId){
+  const table = document.getElementById(tableId);
+  const rows = [...table.querySelectorAll('tr')];
+  return rows.map(tr => [...tr.children].map(td => td.textContent.trim()));
+}
+function exportTableCSV(tableId, filename){
+  const aoa = tableToAOA(tableId);
+  const csv = aoa.map(r => r.map(c=>`"${c.replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  downloadBlob(new Blob(["\uFEFF"+csv], {type:'text/csv;charset=utf-8;'}), filename+'.csv');
+}
+function exportTableXLSX(tableId, filename){
+  const aoa = tableToAOA(tableId);
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+  XLSX.writeFile(wb, filename+'.xlsx');
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* Generic import: reads csv/xlsx and appends new rows into given table body (tries to match column count) */
+function importGeneric(evt, tableId){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const colCount = table.querySelector('thead tr').children.length;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    let aoa;
+    if(file.name.toLowerCase().endsWith('.csv')){
+      const text = e.target.result;
+      aoa = text.split(/\r?\n/).filter(l=>l.trim().length).map(line=>{
+        return line.split(',').map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"'));
+      });
+      aoa.shift(); // remove header row assumption
+    } else {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      aoa = XLSX.utils.sheet_to_json(ws, {header:1});
+      aoa.shift();
+    }
+    aoa.forEach(row=>{
+      if(!row || row.length===0) return;
+      const tr = document.createElement('tr');
+      tr.className='bg-yellow-50';
+      for(let i=0;i<colCount;i++){
+        const td = document.createElement('td');
+        td.className='p-2';
+        td.textContent = row[i]!==undefined ? row[i] : '';
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    });
+    alert('ইমপোর্ট সম্পন্ন হয়েছে! নতুন সারিগুলো টেবিলের নিচে যোগ হয়েছে (হলুদ রঙে চিহ্নিত)।');
+    evt.target.value='';
+  };
+  if(file.name.toLowerCase().endsWith('.csv')) reader.readAsText(file);
+  else reader.readAsArrayBuffer(file);
+}
+
+/* Custom tab export/import */
+function exportCustomCSV(){
+  const list = loadCustom();
+  const rows = [['Title','Category','Text','HasImage'], ...list.map(i=>[i.title,i.category,i.text, i.image?'Yes':'No'])];
+  const csv = rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  downloadBlob(new Blob(["\uFEFF"+csv], {type:'text/csv;charset=utf-8;'}), 'custom_info.csv');
+}
+function exportCustomXLSX(){
+  const list = loadCustom();
+  const rows = [['Title','Category','Text','HasImage'], ...list.map(i=>[i.title,i.category,i.text, i.image?'Yes':'No'])];
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'CustomInfo');
+  XLSX.writeFile(wb, 'custom_info.xlsx');
+}
+function importCustom(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    let aoa;
+    if(file.name.toLowerCase().endsWith('.csv')){
+      aoa = e.target.result.split(/\r?\n/).filter(l=>l.trim().length).map(line=>line.split(',').map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"')));
+    } else {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1});
+    }
+    aoa.shift();
+    const list = loadCustom();
+    aoa.forEach(row=>{
+      if(!row || row.length===0) return;
+      list.push({title:row[0]||'', category:row[1]||'সাধারণ', text:row[2]||'', image:''});
+    });
+    saveCustom(list);
+    renderCustom();
+    alert('কাস্টম তথ্য ইমপোর্ট সম্পন্ন!');
+    evt.target.value='';
+  };
+  if(file.name.toLowerCase().endsWith('.csv')) reader.readAsText(file);
+  else reader.readAsArrayBuffer(file);
+}
+
+/* ============================================================
+   SERVICE WORKER REGISTRATION
+============================================================ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

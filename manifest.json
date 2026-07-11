@@ -1,0 +1,16 @@
+{
+  "name": "বহুমুখী তথ্যকোষ - Multi Reference App",
+  "short_name": "তথ্যকোষ",
+  "description": "সংখ্যা, ক্রম, সপ্তাহ, মাস, ঋতু, রোমান সংখ্যা, ইউনিট কনভার্টার ও কাস্টম তথ্যের সমন্বিত অফলাইন অ্যাপ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f8fafc",
+  "theme_color": "#4338ca",
+  "lang": "bn",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
