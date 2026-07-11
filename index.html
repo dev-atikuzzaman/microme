@@ -26,7 +26,7 @@
     --app-font-color: #1e1b2e;
   }
   html,body{
-    font-family: var(--app-font-family, 'NotoBengaliFallback','SiyamRupali','sans-serif');
+    font-family: var(--app-font-family, 'SiyamRupali','Noto Sans Bengali','sans-serif');
     font-size: var(--app-font-size);
     color: var(--app-font-color);
   }
@@ -34,10 +34,6 @@
     font-family:'NotoBengaliFallback';
     src: local('Noto Sans Bengali');
   }
-  .font-nikosh{ font-family:'Nikosh','Noto Sans Bengali',sans-serif; }
-  .font-nikoshban{ font-family:'NikoshBan','Noto Sans Bengali',sans-serif; }
-  .font-siyamrupali{ font-family:'SiyamRupali','Noto Sans Bengali',sans-serif; }
-  .font-timesnewroman{ font-family:'Times New Roman', Times, serif; }
 
   .tab-scroll::-webkit-scrollbar{ height:8px; }
   .tab-scroll::-webkit-scrollbar-thumb{ background:#c7c7c7; border-radius:8px; }
@@ -67,13 +63,9 @@
       </h1>
       <div class="flex flex-wrap items-center gap-2 text-sm">
         <label class="flex items-center gap-1">ফন্ট:
-          <select id="fontFamilySelect" class="border rounded px-2 py-1">
-            <option value="font-siyamrupali">Siyam Rupali</option>
-            <option value="font-nikosh">Nikosh</option>
-            <option value="font-nikoshban">NikoshBan</option>
-            <option value="font-timesnewroman">Times New Roman</option>
-          </select>
+          <select id="fontFamilySelect" class="border rounded px-2 py-1 max-w-[140px]"></select>
         </label>
+        <button id="fontManagerBtn" title="নতুন কাস্টম ফন্ট আপলোড করুন" class="px-2 py-1.5 rounded-lg bg-fuchsia-700 text-white hover:bg-fuchsia-800 text-xs">🔤+</button>
         <label class="flex items-center gap-1">সাইজ:
           <input id="fontSizeRange" type="range" min="12" max="32" value="16" class="align-middle">
         </label>
@@ -81,48 +73,20 @@
           <input id="fontColorPicker" type="color" value="#1e1b2e" class="w-8 h-8 border rounded cursor-pointer">
         </label>
         <button id="printBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700">🖨️ প্রিন্ট</button>
-        <button id="fontManagerBtn" class="px-3 py-1.5 rounded-lg bg-fuchsia-700 text-white hover:bg-fuchsia-800">🔤 ফন্ট আপলোড করুন</button>
       </div>
     </div>
-    <p class="text-xs text-slate-500 mt-1">নোট: Nikosh/NikoshBan/Siyam Rupali ফন্ট আপনার ডিভাইসে ইনস্টল থাকলে সেটিই ব্যবহার হবে। অথবা "🔤 ফন্ট আপলোড করুন" বাটনে চেপে ফন্ট ফাইল (.ttf/.otf) সরাসরি অ্যাপে যুক্ত করে দিন — একবার আপলোড করলে পরবর্তীতে প্রতিবার এই ফোনে/এই অ্যাপে অটোমেটিক লোড হবে।</p>
   </div>
 
-  <!-- Font Manager Panel -->
+  <!-- Compact Font Manager Popover -->
   <div id="fontManagerPanel" class="hidden border-t bg-fuchsia-50">
-    <div class="max-w-7xl mx-auto px-3 py-4">
-      <h3 class="font-bold text-fuchsia-800 mb-1">🔤 কাস্টম ফন্ট আপলোড ব্যবস্থা</h3>
-      <p class="text-xs text-slate-600 mb-3">
-        Android ফোনে সিস্টেম-ওয়াইড ফন্ট ইনস্টল না করেই, নিচে আপনার ডাউনলোড করা .ttf/.otf ফাইল সিলেক্ট করুন — অ্যাপ নিজেই ফন্টটি সংরক্ষণ করে সাথে সাথে ব্যবহার শুরু করবে। ফন্ট ফাইল কীভাবে জোগাড় করবেন তার ধাপ নিচে দেওয়া আছে।
-      </p>
-      <div class="grid sm:grid-cols-3 gap-3">
-        <div class="bg-white rounded-lg p-3 shadow">
-          <div class="font-semibold mb-1">Siyam Rupali</div>
-          <input type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs w-full" onchange="uploadCustomFont(event,'siyamrupali')">
-          <div id="status_siyamrupali" class="text-xs mt-1 text-slate-500">কোনো কাস্টম ফন্ট আপলোড করা নেই</div>
-        </div>
-        <div class="bg-white rounded-lg p-3 shadow">
-          <div class="font-semibold mb-1">Nikosh</div>
-          <input type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs w-full" onchange="uploadCustomFont(event,'nikosh')">
-          <div id="status_nikosh" class="text-xs mt-1 text-slate-500">কোনো কাস্টম ফন্ট আপলোড করা নেই</div>
-        </div>
-        <div class="bg-white rounded-lg p-3 shadow">
-          <div class="font-semibold mb-1">NikoshBan</div>
-          <input type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs w-full" onchange="uploadCustomFont(event,'nikoshban')">
-          <div id="status_nikoshban" class="text-xs mt-1 text-slate-500">কোনো কাস্টম ফন্ট আপলোড করা নেই</div>
-        </div>
+    <div class="max-w-7xl mx-auto px-3 py-2.5">
+      <div class="flex flex-wrap items-center gap-2">
+        <input id="newFontName" type="text" placeholder="ফন্টের নাম" class="border rounded px-2 py-1 text-sm w-32">
+        <input id="newFontFile" type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs max-w-[160px]">
+        <button onclick="addNewCustomFont()" class="px-2 py-1 bg-fuchsia-700 text-white rounded text-xs">যোগ করুন</button>
+        <button onclick="document.getElementById('fontManagerPanel').classList.add('hidden')" class="text-xs text-slate-400 ml-auto">✕ বন্ধ</button>
       </div>
-      <details class="mt-4 bg-white rounded-lg p-3 shadow text-sm">
-        <summary class="font-semibold cursor-pointer text-fuchsia-700">📥 Android ফোনে ফন্ট ফাইল কীভাবে জোগাড় করবেন? (ধাপে ধাপে)</summary>
-        <ol class="list-decimal pl-5 mt-2 space-y-1.5 text-slate-700">
-          <li>ফোনের Chrome ব্রাউজারে <b>omicronlab.com</b>-এ যান (Avro Keyboard-এর অফিসিয়াল সাইট, যেখান থেকে Bangla ফন্টগুলো বিনামূল্যে বিতরণ করা হয়) এবং "Fonts" বা "Downloads" সেকশনে যান।</li>
-          <li>SiyamRupali.ttf / Nikosh.ttf / NikoshBan.ttf ফাইল খুঁজে ডাউনলোড করুন — এগুলো সাধারণত .zip আকারে থাকে।</li>
-          <li>ডাউনলোড হওয়া .zip ফাইলটি ফোনের "Files" বা "My Files" অ্যাপ দিয়ে খুলে Extract করুন (প্রয়োজনে "ZArchiver" জাতীয় ফ্রি অ্যাপ ব্যবহার করুন)।</li>
-          <li>এক্সট্র্যাক্ট হওয়ার পর .ttf ফাইলটি সাধারণত <b>Downloads</b> ফোল্ডারেই থাকবে।</li>
-          <li>এই অ্যাপে ফিরে এসে উপরের নির্দিষ্ট বক্সে (Siyam Rupali / Nikosh / NikoshBan) "Choose File" চেপে Downloads ফোল্ডার থেকে সেই .ttf ফাইলটি সিলেক্ট করুন।</li>
-          <li>আপলোড সম্পন্ন হলে স্ট্যাটাসে "✅ সক্রিয়" দেখাবে এবং উপরের ফন্ট ড্রপডাউন থেকে সেই ফন্ট সিলেক্ট করলেই পুরো অ্যাপে সেটি প্রয়োগ হবে। এটি ফোনে/ব্রাউজারেই সংরক্ষিত থাকে, তাই একবার আপলোড করলে পরের বার অ্যাপ খুললেও আর লাগবে না।</li>
-        </ol>
-        <p class="text-xs text-slate-500 mt-2">বিকল্প: "Avro Keyboard" বা "Bangla Font Pack" লিখে Google-এ সার্চ করলেও অফিসিয়াল ফ্রি সোর্স থেকে ডাউনলোড লিংক পাবেন। কপিরাইট সুরক্ষিত থার্ড-পার্টি সোর্স এড়িয়ে সবসময় অফিসিয়াল/ফ্রি-লাইসেন্সড সোর্স থেকে ডাউনলোড করুন।</p>
-      </details>
+      <div id="customFontChips" class="flex flex-wrap gap-1.5 mt-2"></div>
     </div>
   </div>
 
@@ -137,6 +101,9 @@
       <button data-tab="t6" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-purple-600 hover:bg-purple-700 transition">রোমান সংখ্যা</button>
       <button data-tab="t7" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-sky-600 hover:bg-sky-700 transition">ইউনিট কনভার্টার</button>
       <button data-tab="t8" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-pink-600 hover:bg-pink-700 transition">কাস্টম তথ্য</button>
+      <button data-tab="t9" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-lime-600 hover:bg-lime-700 transition">বাংলাদেশ (জেলা-উপজেলা)</button>
+      <button data-tab="t10" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-cyan-600 hover:bg-cyan-700 transition">মহাদেশ ও দেশ</button>
+      <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-blue-700 hover:bg-blue-800 transition">মহাসাগর</button>
     </div>
   </nav>
 </header>
@@ -219,21 +186,23 @@
     <h2 class="text-lg font-bold text-emerald-700 mb-2">🗓️ ইংরেজি মাস (English Months)</h2>
     <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
       <table id="t4TableEn" class="w-full text-sm sm:text-base">
-        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">English</th><th class="p-2 text-left">বাংলা উচ্চারণ</th></tr></thead>
+        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">English</th><th class="p-2 text-left">বাংলা উচ্চারণ</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyEn"></tbody>
       </table>
     </div>
     <h2 class="text-lg font-bold text-emerald-700 mb-2">🌾 বাংলা মাস (Bengali Calendar Months)</h2>
+    <p class="text-xs text-slate-500 mb-2">* ২০১৯ সালের সংস্কারিত বাংলা পঞ্জিকা অনুযায়ী — ফাল্গুন লিপ ইয়ারে ৩১ দিন হয়।</p>
     <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
       <table id="t4TableBn" class="w-full text-sm sm:text-base">
-        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">আনুমানিক গ্রেগরিয়ান সময়কাল</th></tr></thead>
+        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">আনুমানিক গ্রেগরিয়ান সময়কাল</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyBn"></tbody>
       </table>
     </div>
     <h2 class="text-lg font-bold text-emerald-700 mb-2">🌙 আরবি (হিজরি) মাস</h2>
+    <p class="text-xs text-slate-500 mb-2">* চন্দ্র মাস হওয়ায় দিন সংখ্যা চাঁদ দেখার উপর নির্ভর করে — সাধারণত ২৯ অথবা ৩০ দিন।</p>
     <div class="overflow-x-auto rounded-xl shadow bg-white">
       <table id="t4TableAr" class="w-full text-sm sm:text-base">
-        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">আরবি/বাংলা নাম</th><th class="p-2 text-left">English</th></tr></thead>
+        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">আরবি/বাংলা নাম</th><th class="p-2 text-left">English</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyAr"></tbody>
       </table>
     </div>
@@ -344,6 +313,42 @@
     <div id="customList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
   </section>
 
+  <!-- ================= TAB 9: BANGLADESH DISTRICT->UPAZILA->UNION->VILLAGE ================= -->
+  <section id="t9" class="tab-panel hidden">
+    <div class="bg-lime-50 border border-lime-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
+      ৬৪টি জেলার তালিকা নির্ভুলভাবে দেওয়া আছে। উপজেলা/ইউনিয়ন/গ্রাম — এই বিশাল তালিকা (৫০০+ উপজেলা, হাজার হাজার ইউনিয়ন-গ্রাম) নির্ভুলভাবে মুখস্থ থেকে দেওয়া নিরাপদ নয়, তাই প্রতিটি জেলার নিচে আপনি নিজে উপজেলা/ইউনিয়ন/গ্রাম যোগ করতে পারবেন — একবার যোগ করলে তা এই ব্রাউজারে সংরক্ষিত থাকবে।
+    </div>
+    <div class="grid sm:grid-cols-2 gap-3 mb-4">
+      <select id="bdDivision" class="border rounded-lg px-3 py-2"></select>
+      <select id="bdDistrict" class="border rounded-lg px-3 py-2"></select>
+    </div>
+    <div id="bdCascade" class="space-y-4"></div>
+  </section>
+
+  <!-- ================= TAB 10: CONTINENTS & COUNTRIES ================= -->
+  <section id="t10" class="tab-panel hidden">
+    <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
+      প্রতিটি মহাদেশের প্রধান দেশগুলোর তালিকা দেওয়া আছে। কোনো দেশ বাদ পড়লে বা নতুন তথ্য (রাজধানী, নোট ইত্যাদি) যোগ করতে "কাস্টম যোগ করুন" ব্যবহার করুন — তা সংরক্ষিত থাকবে।
+    </div>
+    <select id="continentSelect" class="border rounded-lg px-3 py-2 mb-4 w-full sm:w-auto"></select>
+    <div id="continentCountries" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4"></div>
+    <div class="bg-white rounded-xl shadow p-3">
+      <h4 class="font-semibold text-cyan-700 mb-2 text-sm">➕ কাস্টম দেশ/তথ্য যোগ করুন</h4>
+      <div class="flex flex-wrap gap-2">
+        <input id="customCountryInput" type="text" placeholder="দেশের নাম বা তথ্য" class="border rounded-lg px-3 py-2 flex-1 min-w-[160px]">
+        <button onclick="addCustomContinentItem()" class="px-3 py-2 bg-cyan-600 text-white rounded-lg text-sm">যোগ করুন</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB 11: OCEANS ================= -->
+  <section id="t11" class="tab-panel hidden">
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
+      পৃথিবীর ৫টি মহাসাগর নিচে দেওয়া আছে। প্রতিটির নিচে উল্লেখযোগ্য সাগর/তথ্য কাস্টমভাবে যোগ করতে পারবেন।
+    </div>
+    <div id="oceanList" class="space-y-4"></div>
+  </section>
+
 </main>
 
 <script>
@@ -352,11 +357,39 @@
 ============================================================ */
 const body = document.body;
 const fontSelect = document.getElementById('fontFamilySelect');
-fontSelect.addEventListener('change', () => {
-  body.classList.remove('font-nikosh','font-nikoshban','font-siyamrupali','font-timesnewroman');
-  body.classList.add(fontSelect.value);
-});
-body.classList.add('font-siyamrupali');
+
+// Built-in font keys -> actual CSS font-family stack
+const BUILTIN_FONTS = {
+  siyamrupali: { label:'Siyam Rupali', stack:`'SiyamRupali','Noto Sans Bengali',sans-serif` },
+  nikosh:      { label:'Nikosh',       stack:`'Nikosh','Noto Sans Bengali',sans-serif` },
+  nikoshban:   { label:'NikoshBan',    stack:`'NikoshBan','Noto Sans Bengali',sans-serif` },
+  timesnewroman:{ label:'Times New Roman', stack:`'Times New Roman', Times, serif` }
+};
+
+function applyFont(key){
+  const custom = loadCustomFontsList().find(f=>f.id===key);
+  const stack = custom ? `'${custom.familyName}','Noto Sans Bengali',sans-serif` : (BUILTIN_FONTS[key]?.stack || BUILTIN_FONTS.siyamrupali.stack);
+  document.documentElement.style.setProperty('--app-font-family', stack);
+  localStorage.setItem('activeFontKey', key);
+}
+
+function rebuildFontDropdown(){
+  const current = fontSelect.value || localStorage.getItem('activeFontKey') || 'siyamrupali';
+  fontSelect.innerHTML = '';
+  Object.entries(BUILTIN_FONTS).forEach(([key,f])=>{
+    const opt = document.createElement('option');
+    opt.value = key; opt.textContent = f.label;
+    fontSelect.appendChild(opt);
+  });
+  loadCustomFontsList().forEach(f=>{
+    const opt = document.createElement('option');
+    opt.value = f.id; opt.textContent = '🔤 '+f.name;
+    fontSelect.appendChild(opt);
+  });
+  if([...fontSelect.options].some(o=>o.value===current)) fontSelect.value = current;
+}
+
+fontSelect.addEventListener('change', () => applyFont(fontSelect.value));
 
 document.getElementById('fontSizeRange').addEventListener('input', (e)=>{
   document.documentElement.style.setProperty('--app-font-size', e.target.value+'px');
@@ -367,16 +400,18 @@ document.getElementById('fontColorPicker').addEventListener('input', (e)=>{
 document.getElementById('printBtn').addEventListener('click', ()=> window.print());
 
 /* ============================================================
-   CUSTOM FONT UPLOAD SYSTEM (works without Android system font install)
+   UNLIMITED CUSTOM FONT UPLOAD SYSTEM (no Android system install needed)
 ============================================================ */
 const fontManagerBtn = document.getElementById('fontManagerBtn');
 const fontManagerPanel = document.getElementById('fontManagerPanel');
-fontManagerBtn.addEventListener('click', ()=>{
-  fontManagerPanel.classList.toggle('hidden');
-});
+fontManagerBtn.addEventListener('click', ()=> fontManagerPanel.classList.toggle('hidden'));
 
-const FONT_SLOTS = ['siyamrupali','nikosh','nikoshban'];
-const FONT_STORAGE_PREFIX = 'customFontData_';
+const CUSTOM_FONTS_KEY = 'customFontsListV2';
+
+function loadCustomFontsList(){
+  try{ return JSON.parse(localStorage.getItem(CUSTOM_FONTS_KEY)) || []; }catch(e){ return []; }
+}
+function saveCustomFontsList(list){ localStorage.setItem(CUSTOM_FONTS_KEY, JSON.stringify(list)); }
 
 function mimeForExt(name){
   const ext = name.split('.').pop().toLowerCase();
@@ -386,83 +421,101 @@ function mimeForExt(name){
   return 'font/ttf';
 }
 
-function injectFontFace(slot, dataUrl){
-  const familyMap = { siyamrupali:'SiyamRupali', nikosh:'Nikosh', nikoshban:'NikoshBan' };
-  let styleTag = document.getElementById('customFontStyle_'+slot);
+function guessFontNameFromFile(filename){
+  return filename.replace(/\.(ttf|otf|woff2?|TTF|OTF|WOFF2?)$/,'').replace(/[_-]+/g,' ').trim();
+}
+
+// Auto-fill the name field the moment a file is chosen, so the user can just confirm or edit it
+document.getElementById('newFontFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  const nameInput = document.getElementById('newFontName');
+  if(file && !nameInput.value.trim()){
+    nameInput.value = guessFontNameFromFile(file.name);
+  }
+});
+
+function injectCustomFontFace(familyName, dataUrl){
+  let styleTag = document.getElementById('customFontStyle_'+familyName);
   if(!styleTag){
     styleTag = document.createElement('style');
-    styleTag.id = 'customFontStyle_'+slot;
+    styleTag.id = 'customFontStyle_'+familyName;
     document.head.appendChild(styleTag);
   }
-  // Higher priority than the local() @font-face declared in <style> above, since this comes later in the DOM.
-  styleTag.textContent = `@font-face{ font-family:'${familyMap[slot]}'; src:url('${dataUrl}'); font-display:swap; }`;
+  styleTag.textContent = `@font-face{ font-family:'${familyName}'; src:url('${dataUrl}'); font-display:swap; }`;
 }
 
-function updateFontStatus(slot, fileName){
-  const el = document.getElementById('status_'+slot);
-  if(!el) return;
-  if(fileName){
-    el.innerHTML = `✅ সক্রিয়: <span class="font-medium">${fileName}</span> <button class="text-red-500 underline ml-1" onclick="removeCustomFont('${slot}')">মুছুন</button>`;
-  } else {
-    el.textContent = 'কোনো কাস্টম ফন্ট আপলোড করা নেই';
-  }
-}
-
-function uploadCustomFont(evt, slot){
-  const file = evt.target.files[0];
-  if(!file) return;
+function addNewCustomFont(){
+  const fileInput = document.getElementById('newFontFile');
+  const nameInput = document.getElementById('newFontName');
+  const file = fileInput.files[0];
+  if(!file){ alert('আগে একটি ফন্ট ফাইল (.ttf/.otf) সিলেক্ট করুন।'); return; }
   if(file.size > 4.5*1024*1024){
-    alert('ফন্ট ফাইলটি অনেক বড় (4.5MB এর বেশি)। দয়া করে ছোট সাইজের .ttf/.otf ফাইল ব্যবহার করুন।');
-    evt.target.value='';
+    alert('ফন্ট ফাইলটি অনেক বড় (4.5MB এর বেশি)। ছোট সাইজের ফন্ট ব্যবহার করুন।');
     return;
   }
+  let name = nameInput.value.trim() || guessFontNameFromFile(file.name);
   const reader = new FileReader();
   reader.onload = (e)=>{
     let dataUrl = e.target.result;
-    // Ensure correct mime prefix even if browser guesses generic octet-stream
     if(dataUrl.startsWith('data:application/octet-stream') || dataUrl.startsWith('data:;base64')){
       const base64 = dataUrl.split(',')[1];
       dataUrl = `data:${mimeForExt(file.name)};base64,${base64}`;
     }
+    const id = 'cf_' + Date.now();
+    const familyName = 'CustomFont_' + id;
+    const list = loadCustomFontsList();
+    list.push({ id, name, familyName, dataUrl });
     try{
-      localStorage.setItem(FONT_STORAGE_PREFIX+slot, JSON.stringify({name:file.name, data:dataUrl}));
+      saveCustomFontsList(list);
     }catch(err){
       alert('সংরক্ষণ করতে সমস্যা হয়েছে — ফাইলটি হয়তো বড়। ছোট ফন্ট ফাইল দিয়ে চেষ্টা করুন।');
       return;
     }
-    injectFontFace(slot, dataUrl);
-    updateFontStatus(slot, file.name);
-    // Auto-switch to this font so the user immediately sees the result
-    const classMap = { siyamrupali:'font-siyamrupali', nikosh:'font-nikosh', nikoshban:'font-nikoshban' };
-    fontSelect.value = classMap[slot];
-    body.classList.remove('font-nikosh','font-nikoshban','font-siyamrupali','font-timesnewroman');
-    body.classList.add(classMap[slot]);
-    alert('ফন্ট সফলভাবে যুক্ত হয়েছে এবং প্রয়োগ করা হয়েছে!');
-    evt.target.value='';
+    injectCustomFontFace(familyName, dataUrl);
+    rebuildFontDropdown();
+    renderCustomFontChips();
+    fontSelect.value = id;
+    applyFont(id);
+    nameInput.value=''; fileInput.value='';
   };
   reader.readAsDataURL(file);
 }
 
-function removeCustomFont(slot){
-  localStorage.removeItem(FONT_STORAGE_PREFIX+slot);
-  const styleTag = document.getElementById('customFontStyle_'+slot);
-  if(styleTag) styleTag.remove();
-  updateFontStatus(slot, null);
+function removeCustomFontById(id){
+  const list = loadCustomFontsList().filter(f=>f.id!==id);
+  saveCustomFontsList(list);
+  rebuildFontDropdown();
+  renderCustomFontChips();
+  if(fontSelect.value !== id) return;
+  fontSelect.value = 'siyamrupali';
+  applyFont('siyamrupali');
 }
 
-function loadStoredFonts(){
-  FONT_SLOTS.forEach(slot=>{
-    const raw = localStorage.getItem(FONT_STORAGE_PREFIX+slot);
-    if(raw){
-      try{
-        const {name, data} = JSON.parse(raw);
-        injectFontFace(slot, data);
-        updateFontStatus(slot, name);
-      }catch(e){ /* ignore corrupted entry */ }
-    }
-  });
+function renderCustomFontChips(){
+  const container = document.getElementById('customFontChips');
+  const list = loadCustomFontsList();
+  if(list.length===0){ container.innerHTML=''; return; }
+  container.innerHTML = list.map(f=>
+    `<span class="inline-flex items-center gap-1 bg-white border border-fuchsia-300 rounded-full px-2 py-0.5 text-xs">
+      🔤 ${f.name}
+      <button onclick="removeCustomFontById('${f.id}')" class="text-red-500 font-bold">✕</button>
+    </span>`
+  ).join('');
 }
-loadStoredFonts();
+
+function initFonts(){
+  loadCustomFontsList().forEach(f=> injectCustomFontFace(f.familyName, f.dataUrl));
+  rebuildFontDropdown();
+  renderCustomFontChips();
+  const savedKey = localStorage.getItem('activeFontKey') || 'siyamrupali';
+  if([...fontSelect.options].some(o=>o.value===savedKey)){
+    fontSelect.value = savedKey;
+    applyFont(savedKey);
+  } else {
+    applyFont('siyamrupali');
+  }
+}
+initFonts();
 
 /* ============================================================
    TAB SWITCHING
@@ -574,22 +627,22 @@ weekdays.forEach(([en,bn],idx)=>{
 /* ============================================================
    TAB 4: MONTHS
 ============================================================ */
-const enMonths = [["January","জানুয়ারি"],["February","ফেব্রুয়ারি"],["March","মার্চ"],["April","এপ্রিল"],
-["May","মে"],["June","জুন"],["July","জুলাই"],["August","আগস্ট"],["September","সেপ্টেম্বর"],
-["October","অক্টোবর"],["November","নভেম্বর"],["December","ডিসেম্বর"]];
-const bnMonths = [["বৈশাখ","মধ্য এপ্রিল - মধ্য মে"],["জ্যৈষ্ঠ","মধ্য মে - মধ্য জুন"],["আষাঢ়","মধ্য জুন - মধ্য জুলাই"],
-["শ্রাবণ","মধ্য জুলাই - মধ্য আগস্ট"],["ভাদ্র","মধ্য আগস্ট - মধ্য সেপ্টেম্বর"],["আশ্বিন","মধ্য সেপ্টেম্বর - মধ্য অক্টোবর"],
-["কার্তিক","মধ্য অক্টোবর - মধ্য নভেম্বর"],["অগ্রহায়ণ","মধ্য নভেম্বর - মধ্য ডিসেম্বর"],["পৌষ","মধ্য ডিসেম্বর - মধ্য জানুয়ারি"],
-["মাঘ","মধ্য জানুয়ারি - মধ্য ফেব্রুয়ারি"],["ফাল্গুন","মধ্য ফেব্রুয়ারি - মধ্য মার্চ"],["চৈত্র","মধ্য মার্চ - মধ্য এপ্রিল"]];
-const arMonths = [["মুহাররম","Muharram"],["সফর","Safar"],["রবিউল আউয়াল","Rabi' al-awwal"],["রবিউস সানি","Rabi' al-thani"],
-["জমাদিউল আউয়াল","Jumada al-awwal"],["জমাদিউস সানি","Jumada al-thani"],["রজব","Rajab"],["শাবান","Sha'ban"],
-["রমজান","Ramadan"],["শাওয়াল","Shawwal"],["জিলক্বদ","Dhu al-Qi'dah"],["জিলহজ্জ","Dhu al-Hijjah"]];
-function fillMonthTable(bodyId, arr, useIndex){
+const enMonths = [["January","জানুয়ারি","৩১"],["February","ফেব্রুয়ারি","২৮/২৯*"],["March","মার্চ","৩১"],["April","এপ্রিল","৩০"],
+["May","মে","৩১"],["June","জুন","৩০"],["July","জুলাই","৩১"],["August","আগস্ট","৩১"],["September","সেপ্টেম্বর","৩০"],
+["October","অক্টোবর","৩১"],["November","নভেম্বর","৩০"],["December","ডিসেম্বর","৩১"]];
+const bnMonths = [["বৈশাখ","মধ্য এপ্রিল - মধ্য মে","৩১"],["জ্যৈষ্ঠ","মধ্য মে - মধ্য জুন","৩১"],["আষাঢ়","মধ্য জুন - মধ্য জুলাই","৩১"],
+["শ্রাবণ","মধ্য জুলাই - মধ্য আগস্ট","৩১"],["ভাদ্র","মধ্য আগস্ট - মধ্য সেপ্টেম্বর","৩১"],["আশ্বিন","মধ্য সেপ্টেম্বর - মধ্য অক্টোবর","৩১"],
+["কার্তিক","মধ্য অক্টোবর - মধ্য নভেম্বর","৩০"],["অগ্রহায়ণ","মধ্য নভেম্বর - মধ্য ডিসেম্বর","৩০"],["পৌষ","মধ্য ডিসেম্বর - মধ্য জানুয়ারি","৩০"],
+["মাঘ","মধ্য জানুয়ারি - মধ্য ফেব্রুয়ারি","৩০"],["ফাল্গুন","মধ্য ফেব্রুয়ারি - মধ্য মার্চ","৩০/৩১*"],["চৈত্র","মধ্য মার্চ - মধ্য এপ্রিল","৩০"]];
+const arMonths = [["মুহাররম","Muharram","২৯/৩০"],["সফর","Safar","২৯/৩০"],["রবিউল আউয়াল","Rabi' al-awwal","২৯/৩০"],["রবিউস সানি","Rabi' al-thani","২৯/৩০"],
+["জমাদিউল আউয়াল","Jumada al-awwal","২৯/৩০"],["জমাদিউস সানি","Jumada al-thani","২৯/৩০"],["রজব","Rajab","২৯/৩০"],["শাবান","Sha'ban","২৯/৩০"],
+["রমজান","Ramadan","২৯/৩০"],["শাওয়াল","Shawwal","২৯/৩০"],["জিলক্বদ","Dhu al-Qi'dah","২৯/৩০"],["জিলহজ্জ","Dhu al-Hijjah","২৯/৩০"]];
+function fillMonthTable(bodyId, arr){
   const tbody = document.getElementById(bodyId);
   arr.forEach((row,idx)=>{
     const tr=document.createElement('tr');
     tr.className = idx%2===0?'bg-emerald-50':'bg-white';
-    tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td>`;
+    tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2 font-semibold">${row[2]}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -857,6 +910,214 @@ function importCustom(evt){
   if(file.name.toLowerCase().endsWith('.csv')) reader.readAsText(file);
   else reader.readAsArrayBuffer(file);
 }
+
+/* ============================================================
+   TAB 9: BANGLADESH DIVISION -> DISTRICT -> UPAZILA -> UNION -> VILLAGE
+============================================================ */
+const bdData = {
+  "ঢাকা": ["ঢাকা","ফরিদপুর","গাজীপুর","গোপালগঞ্জ","কিশোরগঞ্জ","মাদারীপুর","মানিকগঞ্জ","মুন্সিগঞ্জ","নারায়ণগঞ্জ","নরসিংদী","রাজবাড়ী","শরীয়তপুর","টাঙ্গাইল"],
+  "চট্টগ্রাম": ["বান্দরবান","ব্রাহ্মণবাড়িয়া","চাঁদপুর","চট্টগ্রাম","কুমিল্লা","কক্সবাজার","ফেনী","খাগড়াছড়ি","লক্ষ্মীপুর","নোয়াখালী","রাঙ্গামাটি"],
+  "খুলনা": ["বাগেরহাট","চুয়াডাঙ্গা","যশোর","ঝিনাইদহ","খুলনা","কুষ্টিয়া","মাগুরা","মেহেরপুর","নড়াইল","সাতক্ষীরা"],
+  "রাজশাহী": ["বগুড়া","জয়পুরহাট","নওগাঁ","নাটোর","চাঁপাইনবাবগঞ্জ","পাবনা","রাজশাহী","সিরাজগঞ্জ"],
+  "রংপুর": ["দিনাজপুর","গাইবান্ধা","কুড়িগ্রাম","লালমনিরহাট","নীলফামারী","পঞ্চগড়","রংপুর","ঠাকুরগাঁও"],
+  "বরিশাল": ["বরগুনা","বরিশাল","ভোলা","ঝালকাঠি","পটুয়াখালী","পিরোজপুর"],
+  "সিলেট": ["হবিগঞ্জ","মৌলভীবাজার","সুনামগঞ্জ","সিলেট"],
+  "ময়মনসিংহ": ["জামালপুর","ময়মনসিংহ","নেত্রকোণা","শেরপুর"]
+};
+const BD_TREE_KEY = 'bdCustomGeoTree';
+function loadBdTree(){ try{ return JSON.parse(localStorage.getItem(BD_TREE_KEY)) || {}; }catch(e){ return {}; } }
+function saveBdTree(tree){ localStorage.setItem(BD_TREE_KEY, JSON.stringify(tree)); }
+
+const bdDivisionSel = document.getElementById('bdDivision');
+const bdDistrictSel = document.getElementById('bdDistrict');
+Object.keys(bdData).forEach(div=>{
+  const opt = document.createElement('option'); opt.value = div; opt.textContent = div;
+  bdDivisionSel.appendChild(opt);
+});
+function populateBdDistricts(){
+  bdDistrictSel.innerHTML = '';
+  bdData[bdDivisionSel.value].forEach(d=>{
+    const opt = document.createElement('option'); opt.value = d; opt.textContent = d;
+    bdDistrictSel.appendChild(opt);
+  });
+  renderBdCascade();
+}
+bdDivisionSel.addEventListener('change', populateBdDistricts);
+bdDistrictSel.addEventListener('change', renderBdCascade);
+
+// Generic 3-level self-growing tree: district -> upazila -> union -> village
+function renderBdCascade(){
+  const district = bdDistrictSel.value;
+  const tree = loadBdTree();
+  if(!tree[district]) tree[district] = {};
+  const container = document.getElementById('bdCascade');
+  container.innerHTML = '';
+
+  function buildLevel(label, colorClass, items, onAdd, onSelect, selectedRenderer){
+    const wrap = document.createElement('div');
+    wrap.className = 'bg-white rounded-xl shadow p-3';
+    wrap.innerHTML = `<div class="font-semibold ${colorClass} mb-2">${label}</div>
+      <div class="flex flex-wrap gap-2 mb-2 level-chips"></div>
+      <div class="flex gap-2">
+        <input type="text" placeholder="নতুন ${label} যোগ করুন" class="border rounded-lg px-2 py-1.5 text-sm flex-1 level-input">
+        <button class="px-3 py-1.5 bg-lime-600 text-white rounded-lg text-sm level-add">যোগ</button>
+      </div>`;
+    const chipsDiv = wrap.querySelector('.level-chips');
+    items.forEach(item=>{
+      const chip = document.createElement('button');
+      chip.className = 'px-2 py-1 rounded-full text-xs border ' + (item===onSelect.current ? 'bg-lime-600 text-white border-lime-600' : 'bg-lime-50 border-lime-300');
+      chip.innerHTML = `${item} <span class="text-red-400 ml-1">✕</span>`;
+      chip.onclick = (e)=>{
+        if(e.target.tagName==='SPAN'){ onAdd.remove(item); return; }
+        onSelect.set(item);
+      };
+      chipsDiv.appendChild(chip);
+    });
+    wrap.querySelector('.level-add').onclick = ()=>{
+      const input = wrap.querySelector('.level-input');
+      const val = input.value.trim();
+      if(!val) return;
+      onAdd.add(val);
+      input.value='';
+    };
+    container.appendChild(wrap);
+    return wrap;
+  }
+
+  const upazilas = Object.keys(tree[district]);
+  let selectedUpazila = { current: upazilas[0] || null };
+  buildLevel('উপজেলা', 'text-lime-700', upazilas, {
+    add:(val)=>{ tree[district][val] = tree[district][val] || {}; saveBdTree(tree); renderBdCascade(); },
+    remove:(val)=>{ delete tree[district][val]; saveBdTree(tree); renderBdCascade(); }
+  }, { current: window.__selectedUpazila, set:(val)=>{ window.__selectedUpazila = val; window.__selectedUnion=null; renderBdCascade(); } });
+
+  const currentUpazila = window.__selectedUpazila && tree[district][window.__selectedUpazila] ? window.__selectedUpazila : null;
+  if(currentUpazila){
+    const unions = Object.keys(tree[district][currentUpazila]);
+    buildLevel('ইউনিয়ন', 'text-emerald-700', unions, {
+      add:(val)=>{ tree[district][currentUpazila][val] = tree[district][currentUpazila][val] || []; saveBdTree(tree); renderBdCascade(); },
+      remove:(val)=>{ delete tree[district][currentUpazila][val]; saveBdTree(tree); renderBdCascade(); }
+    }, { current: window.__selectedUnion, set:(val)=>{ window.__selectedUnion = val; renderBdCascade(); } });
+
+    const currentUnion = window.__selectedUnion && tree[district][currentUpazila][window.__selectedUnion] ? window.__selectedUnion : null;
+    if(currentUnion){
+      const villages = tree[district][currentUpazila][currentUnion];
+      buildLevel('গ্রাম', 'text-teal-700', villages, {
+        add:(val)=>{ villages.push(val); saveBdTree(tree); renderBdCascade(); },
+        remove:(val)=>{ tree[district][currentUpazila][currentUnion] = villages.filter(v=>v!==val); saveBdTree(tree); renderBdCascade(); }
+      }, { current:null, set:()=>{} });
+    }
+  }
+  saveBdTree(tree);
+}
+bdDivisionSel.value = Object.keys(bdData)[0];
+populateBdDistricts();
+
+/* ============================================================
+   TAB 10: CONTINENTS & COUNTRIES
+============================================================ */
+const continentData = {
+  "এশিয়া (Asia)": ["আফগানিস্তান","আর্মেনিয়া","আজারবাইজান","বাহরাইন","বাংলাদেশ","ভুটান","ব্রুনাই","কম্বোডিয়া","চীন","সাইপ্রাস","জর্জিয়া","ভারত","ইন্দোনেশিয়া","ইরান","ইরাক","ইসরায়েল","জাপান","জর্ডান","কাজাখস্তান","কুয়েত","কিরগিজস্তান","লাওস","লেবানন","মালয়েশিয়া","মালদ্বীপ","মঙ্গোলিয়া","মিয়ানমার","নেপাল","উত্তর কোরিয়া","ওমান","পাকিস্তান","ফিলিস্তিন","ফিলিপাইন","কাতার","সৌদি আরব","সিঙ্গাপুর","দক্ষিণ কোরিয়া","শ্রীলঙ্কা","সিরিয়া","তাইওয়ান","তাজিকিস্তান","থাইল্যান্ড","তিমুর-লেস্তে","তুরস্ক","তুর্কমেনিস্তান","সংযুক্ত আরব আমিরাত","উজবেকিস্তান","ভিয়েতনাম","ইয়েমেন"],
+  "আফ্রিকা (Africa)": ["আলজেরিয়া","অ্যাঙ্গোলা","বেনিন","বতসোয়ানা","বুরকিনা ফাসো","বুরুন্ডি","কাবো ভের্দে","ক্যামেরুন","মধ্য আফ্রিকান প্রজাতন্ত্র","চাদ","কমোরোস","কঙ্গো প্রজাতন্ত্র","গণতান্ত্রিক কঙ্গো","জিবুতি","মিশর","বিষুবীয় গিনি","ইরিত্রিয়া","এসোয়াতিনি","ইথিওপিয়া","গ্যাবন","গাম্বিয়া","ঘানা","গিনি","গিনি-বিসাউ","আইভরি কোস্ট","কেনিয়া","লেসোথো","লাইবেরিয়া","লিবিয়া","মাদাগাস্কার","মালাউই","মালি","মৌরিতানিয়া","মরিশাস","মরক্কো","মোজাম্বিক","নামিবিয়া","নাইজার","নাইজেরিয়া","রুয়ান্ডা","সাও তোমে ও প্রিন্সিপি","সেনেগাল","সিশেলস","সিয়েরা লিওন","সোমালিয়া","দক্ষিণ আফ্রিকা","দক্ষিণ সুদান","সুদান","তানজানিয়া","টোগো","তিউনিসিয়া","উগান্ডা","জাম্বিয়া","জিম্বাবুয়ে"],
+  "উত্তর আমেরিকা (North America)": ["অ্যান্টিগুয়া ও বার্বুডা","বাহামা","বার্বাডোস","বেলিজ","কানাডা","কোস্টা রিকা","কিউবা","ডোমিনিকা","ডোমিনিকান প্রজাতন্ত্র","এল সালভাদর","গ্রেনাডা","গুয়াতেমালা","হাইতি","হন্ডুরাস","জ্যামাইকা","মেক্সিকো","নিকারাগুয়া","পানামা","সেন্ট কিটস অ্যান্ড নেভিস","সেন্ট লুসিয়া","সেন্ট ভিনসেন্ট","ত্রিনিদাদ ও টোবাগো","যুক্তরাষ্ট্র"],
+  "দক্ষিণ আমেরিকা (South America)": ["আর্জেন্টিনা","বলিভিয়া","ব্রাজিল","চিলি","কলম্বিয়া","ইকুয়েডর","গায়ানা","প্যারাগুয়ে","পেরু","সুরিনাম","উরুগুয়ে","ভেনেজুয়েলা"],
+  "ইউরোপ (Europe)": ["আলবেনিয়া","আন্দোরা","অস্ট্রিয়া","বেলারুশ","বেলজিয়াম","বসনিয়া","বুলগেরিয়া","ক্রোয়েশিয়া","চেক প্রজাতন্ত্র","ডেনমার্ক","এস্তোনিয়া","ফিনল্যান্ড","ফ্রান্স","জার্মানি","গ্রিস","হাঙ্গেরি","আইসল্যান্ড","আয়ারল্যান্ড","ইতালি","কসোভো","লাটভিয়া","লিশটেনস্টাইন","লিথুয়ানিয়া","লুক্সেমবার্গ","মাল্টা","মলদোভা","মোনাকো","মন্টিনিগ্রো","নেদারল্যান্ডস","উত্তর মেসিডোনিয়া","নরওয়ে","পোল্যান্ড","পর্তুগাল","রোমানিয়া","রাশিয়া","সান মারিনো","সার্বিয়া","স্লোভাকিয়া","স্লোভেনিয়া","স্পেন","সুইডেন","সুইজারল্যান্ড","ইউক্রেন","যুক্তরাজ্য","ভ্যাটিকান সিটি"],
+  "অস্ট্রেলিয়া ও ওশেনিয়া (Australia/Oceania)": ["অস্ট্রেলিয়া","ফিজি","কিরিবাতি","মার্শাল দ্বীপপুঞ্জ","মাইক্রোনেশিয়া","নাউরু","নিউজিল্যান্ড","পালাউ","পাপুয়া নিউ গিনি","সামোয়া","সলোমন দ্বীপপুঞ্জ","টোঙ্গা","টুভালু","ভানুয়াতু"],
+  "অ্যান্টার্কটিকা (Antarctica)": ["কোনো সার্বভৌম দেশ নেই — শুধু বিভিন্ন দেশের গবেষণা কেন্দ্র রয়েছে"]
+};
+const CONTINENT_CUSTOM_KEY = 'continentCustomData';
+function loadContinentCustom(){ try{ return JSON.parse(localStorage.getItem(CONTINENT_CUSTOM_KEY)) || {}; }catch(e){ return {}; } }
+function saveContinentCustom(d){ localStorage.setItem(CONTINENT_CUSTOM_KEY, JSON.stringify(d)); }
+
+const continentSelect = document.getElementById('continentSelect');
+Object.keys(continentData).forEach(c=>{
+  const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+  continentSelect.appendChild(opt);
+});
+function renderContinentCountries(){
+  const c = continentSelect.value;
+  const container = document.getElementById('continentCountries');
+  container.innerHTML = '';
+  const custom = loadContinentCustom();
+  const all = [...continentData[c], ...(custom[c]||[])];
+  all.forEach((country, idx)=>{
+    const isCustom = idx >= continentData[c].length;
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-lg shadow px-3 py-2 text-sm flex justify-between items-center';
+    div.innerHTML = `<span>${country}</span>${isCustom?`<button class="text-red-400 text-xs" onclick="removeCustomContinentItem('${c}', ${idx-continentData[c].length})">✕</button>`:''}`;
+    container.appendChild(div);
+  });
+}
+continentSelect.addEventListener('change', renderContinentCountries);
+function addCustomContinentItem(){
+  const input = document.getElementById('customCountryInput');
+  const val = input.value.trim();
+  if(!val) return;
+  const c = continentSelect.value;
+  const custom = loadContinentCustom();
+  custom[c] = custom[c] || [];
+  custom[c].push(val);
+  saveContinentCustom(custom);
+  input.value='';
+  renderContinentCountries();
+}
+function removeCustomContinentItem(c, idx){
+  const custom = loadContinentCustom();
+  custom[c].splice(idx,1);
+  saveContinentCustom(custom);
+  renderContinentCountries();
+}
+renderContinentCountries();
+
+/* ============================================================
+   TAB 11: OCEANS
+============================================================ */
+const oceanData = ["প্রশান্ত মহাসাগর (Pacific Ocean)","আটলান্টিক মহাসাগর (Atlantic Ocean)","ভারত মহাসাগর (Indian Ocean)","দক্ষিণ মহাসাগর (Southern Ocean)","সুমেরু মহাসাগর (Arctic Ocean)"];
+const OCEAN_CUSTOM_KEY = 'oceanCustomData';
+function loadOceanCustom(){ try{ return JSON.parse(localStorage.getItem(OCEAN_CUSTOM_KEY)) || {}; }catch(e){ return {}; } }
+function saveOceanCustom(d){ localStorage.setItem(OCEAN_CUSTOM_KEY, JSON.stringify(d)); }
+
+function renderOceans(){
+  const container = document.getElementById('oceanList');
+  container.innerHTML = '';
+  const custom = loadOceanCustom();
+  oceanData.forEach(ocean=>{
+    const items = custom[ocean] || [];
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-xl shadow p-3';
+    div.innerHTML = `<div class="font-semibold text-blue-700 mb-2">🌊 ${ocean}</div>
+      <div class="flex flex-wrap gap-1.5 mb-2 ocean-chips"></div>
+      <div class="flex gap-2">
+        <input type="text" placeholder="উল্লেখযোগ্য সাগর/তথ্য যোগ করুন" class="border rounded-lg px-2 py-1.5 text-sm flex-1 ocean-input">
+        <button class="px-3 py-1.5 bg-blue-700 text-white rounded-lg text-sm ocean-add">যোগ</button>
+      </div>`;
+    const chipsDiv = div.querySelector('.ocean-chips');
+    items.forEach((item,idx)=>{
+      const chip = document.createElement('span');
+      chip.className = 'px-2 py-1 rounded-full text-xs bg-blue-50 border border-blue-300';
+      chip.innerHTML = `${item} <button class="text-red-400 ml-1" onclick="removeOceanItem('${ocean}',${idx})">✕</button>`;
+      chipsDiv.appendChild(chip);
+    });
+    div.querySelector('.ocean-add').onclick = ()=>{
+      const input = div.querySelector('.ocean-input');
+      const val = input.value.trim();
+      if(!val) return;
+      const c = loadOceanCustom();
+      c[ocean] = c[ocean] || [];
+      c[ocean].push(val);
+      saveOceanCustom(c);
+      renderOceans();
+    };
+    container.appendChild(div);
+  });
+}
+function removeOceanItem(ocean, idx){
+  const c = loadOceanCustom();
+  c[ocean].splice(idx,1);
+  saveOceanCustom(c);
+  renderOceans();
+}
+renderOceans();
 
 /* ============================================================
    SERVICE WORKER REGISTRATION
