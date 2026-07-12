@@ -8,6 +8,7 @@
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   @font-face{
     font-family:'SiyamRupali';
@@ -44,6 +45,42 @@
   .flip-front,.flip-back{ backface-visibility:hidden; position:absolute; inset:0; }
   .flip-back{ transform: rotateY(180deg); }
 
+  /* ===== PREMIUM VISUAL LAYER ===== */
+  body{
+    background: linear-gradient(160deg, #eef2ff 0%, #fdf4ff 35%, #fff7ed 65%, #ecfeff 100%);
+    background-attachment: fixed;
+  }
+  @keyframes fadeSlideIn{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .tab-panel:not(.hidden){ animation: fadeSlideIn .35s ease-out; }
+
+  .tab-btn{ position:relative; overflow:hidden; box-shadow: 0 4px 14px rgba(0,0,0,.12); transform: translateY(0); }
+  .tab-btn:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+  .tab-btn.active-tab{ box-shadow: inset 0 0 0 3px rgba(255,255,255,.85), 0 8px 22px rgba(0,0,0,.25); transform: translateY(-1px) scale(1.02); }
+
+  .glass-header{ background: rgba(255,255,255,.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+  table thead tr{ background-size:200% auto; }
+  table tbody tr{ transition: background-color .15s ease, transform .15s ease; }
+  table tbody tr:hover{ filter: brightness(0.97); }
+
+  .premium-card{ transition: transform .2s ease, box-shadow .2s ease; }
+  .premium-card:hover{ transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,.12); }
+
+  .btn-glow{ transition: filter .15s ease, transform .15s ease; box-shadow: 0 3px 10px rgba(0,0,0,.15); }
+  .btn-glow:hover{ filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-glow:active{ transform: translateY(0); }
+
+  #syncDot{ box-shadow: 0 0 0 0 rgba(34,197,94,.7); animation: pulseDot 2s infinite; }
+  @keyframes pulseDot{
+    0%{ box-shadow:0 0 0 0 rgba(34,197,94,.6); }
+    70%{ box-shadow:0 0 0 8px rgba(34,197,94,0); }
+    100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); }
+  }
+  #syncDot.offline{ animation:none; background:#94a3b8 !important; box-shadow:none; }
+
   @media print{
     body *{ visibility:hidden; }
     #printArea, #printArea *{ visibility:visible; }
@@ -52,27 +89,31 @@
   }
 </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="min-h-screen">
 
 <!-- ===================== HEADER / CONTROLS ===================== -->
-<header class="no-print sticky top-0 z-30 bg-white shadow-md">
+<header class="no-print sticky top-0 z-30 glass-header shadow-lg border-b border-white/50">
   <div class="max-w-7xl mx-auto px-3 py-3">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent">
+      <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent drop-shadow-sm flex items-center gap-2">
         📚 বহুমুখী তথ্যকোষ
+        <span class="flex items-center gap-1 text-xs font-normal text-slate-500 bg-white/70 rounded-full px-2 py-0.5 border">
+          <span id="syncDot" class="offline w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
+          <span id="syncLabel">লোকাল মোড</span>
+        </span>
       </h1>
       <div class="flex flex-wrap items-center gap-2 text-sm">
         <label class="flex items-center gap-1">ফন্ট:
           <select id="fontFamilySelect" class="border rounded px-2 py-1 max-w-[140px]"></select>
         </label>
-        <button id="fontManagerBtn" title="নতুন কাস্টম ফন্ট আপলোড করুন" class="px-2 py-1.5 rounded-lg bg-fuchsia-700 text-white hover:bg-fuchsia-800 text-xs">🔤+</button>
+        <button id="fontManagerBtn" title="নতুন কাস্টম ফন্ট আপলোড করুন" class="px-2 py-1.5 rounded-xl bg-gradient-to-br from-fuchsia-600 to-fuchsia-800 text-white btn-glow text-xs">🔤+</button>
         <label class="flex items-center gap-1">সাইজ:
           <input id="fontSizeRange" type="range" min="12" max="32" value="16" class="align-middle">
         </label>
         <label class="flex items-center gap-1">রং:
           <input id="fontColorPicker" type="color" value="#1e1b2e" class="w-8 h-8 border rounded cursor-pointer">
         </label>
-        <button id="printBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700">🖨️ প্রিন্ট</button>
+        <button id="printBtn" class="px-3 py-1.5 rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-white btn-glow">🖨️ প্রিন্ট</button>
       </div>
     </div>
   </div>
@@ -83,7 +124,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <input id="newFontName" type="text" placeholder="ফন্টের নাম" class="border rounded px-2 py-1 text-sm w-32">
         <input id="newFontFile" type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs max-w-[160px]">
-        <button onclick="addNewCustomFont()" class="px-2 py-1 bg-fuchsia-700 text-white rounded text-xs">যোগ করুন</button>
+        <button onclick="addNewCustomFont()" class="px-2 py-1 bg-fuchsia-700 text-white rounded-lg text-xs btn-glow">যোগ করুন</button>
         <button onclick="document.getElementById('fontManagerPanel').classList.add('hidden')" class="text-xs text-slate-400 ml-auto">✕ বন্ধ</button>
       </div>
       <div id="customFontChips" class="flex flex-wrap gap-1.5 mt-2"></div>
@@ -91,19 +132,19 @@
   </div>
 
   <!-- Tabs -->
-  <nav class="tab-scroll overflow-x-auto border-t">
-    <div class="flex w-max sm:w-full">
-      <button data-tab="t1" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition">০-১০০ সংখ্যা</button>
-      <button data-tab="t2" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-rose-500 hover:bg-rose-600 transition">১-৩১ ক্রম</button>
-      <button data-tab="t3" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-amber-500 hover:bg-amber-600 transition">সপ্তাহ</button>
-      <button data-tab="t4" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition">মাস (ইং/বাং/আরবি)</button>
-      <button data-tab="t5" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-teal-600 hover:bg-teal-700 transition">ঋতু</button>
-      <button data-tab="t6" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-purple-600 hover:bg-purple-700 transition">রোমান সংখ্যা</button>
-      <button data-tab="t7" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-sky-600 hover:bg-sky-700 transition">ইউনিট কনভার্টার</button>
-      <button data-tab="t8" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-pink-600 hover:bg-pink-700 transition">কাস্টম তথ্য</button>
-      <button data-tab="t9" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-lime-600 hover:bg-lime-700 transition">বাংলাদেশ (জেলা-উপজেলা)</button>
-      <button data-tab="t10" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-cyan-600 hover:bg-cyan-700 transition">মহাদেশ ও দেশ</button>
-      <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 font-semibold text-white bg-blue-700 hover:bg-blue-800 transition">মহাসাগর</button>
+  <nav class="tab-scroll overflow-x-auto border-t border-white/50 pt-2 pb-1 px-1">
+    <div class="flex w-max sm:w-full gap-1.5">
+      <button data-tab="t1" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-indigo-500 to-indigo-700 transition">০-১০০ সংখ্যা</button>
+      <button data-tab="t2" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-rose-400 to-rose-600 transition">১-৩১ ক্রম</button>
+      <button data-tab="t3" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-amber-400 to-amber-600 transition">সপ্তাহ</button>
+      <button data-tab="t4" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-emerald-500 to-emerald-700 transition">মাস (ইং/বাং/আরবি)</button>
+      <button data-tab="t5" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-teal-500 to-teal-700 transition">ঋতু</button>
+      <button data-tab="t6" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-purple-500 to-purple-700 transition">রোমান সংখ্যা</button>
+      <button data-tab="t7" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-sky-500 to-sky-700 transition">ইউনিট কনভার্টার</button>
+      <button data-tab="t8" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-pink-500 to-pink-700 transition">কাস্টম তথ্য</button>
+      <button data-tab="t9" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-lime-500 to-lime-700 transition">বাংলাদেশ (জেলা-উপজেলা)</button>
+      <button data-tab="t10" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-cyan-500 to-cyan-700 transition">মহাদেশ ও দেশ</button>
+      <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-blue-600 to-blue-800 transition">মহাসাগর</button>
     </div>
   </nav>
 </header>
@@ -114,13 +155,13 @@
   <section id="t1" class="tab-panel">
     <div class="no-print flex flex-wrap items-center gap-2 mb-4">
       <input id="t1Search" type="text" placeholder="🔍 যেকোনো ভাবে সার্চ করুন (0, Zero, শূন্য, ০ ...)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
-      <button onclick="exportTableCSV('t1Table','numbers')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
-      <button onclick="exportTableXLSX('t1Table','numbers')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
-      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+      <button onclick="exportTableCSV('t1Table','numbers')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
+      <button onclick="exportTableXLSX('t1Table','numbers')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-xl text-sm btn-glow cursor-pointer">
         Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t1Table')">
       </label>
     </div>
-    <div class="overflow-x-auto rounded-xl shadow bg-white">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
       <table id="t1Table" class="w-full text-sm sm:text-base">
         <thead class="bg-indigo-600 text-white sticky top-0">
           <tr>
@@ -140,13 +181,13 @@
   <section id="t2" class="tab-panel hidden">
     <div class="no-print flex flex-wrap items-center gap-2 mb-4">
       <input id="t2Search" type="text" placeholder="🔍 সার্চ করুন (1, First, প্রথম, ১ম ...)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
-      <button onclick="exportTableCSV('t2Table','ordinals')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
-      <button onclick="exportTableXLSX('t2Table','ordinals')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
-      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+      <button onclick="exportTableCSV('t2Table','ordinals')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
+      <button onclick="exportTableXLSX('t2Table','ordinals')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-xl text-sm btn-glow cursor-pointer">
         Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t2Table')">
       </label>
     </div>
-    <div class="overflow-x-auto rounded-xl shadow bg-white">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
       <table id="t2Table" class="w-full text-sm sm:text-base">
         <thead class="bg-rose-500 text-white sticky top-0">
           <tr>
@@ -165,9 +206,9 @@
   <!-- ================= TAB 3: WEEKDAYS ================= -->
   <section id="t3" class="tab-panel hidden">
     <div class="no-print flex flex-wrap items-center gap-2 mb-4">
-      <button onclick="exportTableCSV('t3Table','weekdays')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
-      <button onclick="exportTableXLSX('t3Table','weekdays')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
-      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+      <button onclick="exportTableCSV('t3Table','weekdays')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
+      <button onclick="exportTableXLSX('t3Table','weekdays')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-xl text-sm btn-glow cursor-pointer">
         Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t3Table')">
       </label>
     </div>
@@ -178,13 +219,13 @@
   <!-- ================= TAB 4: MONTHS ================= -->
   <section id="t4" class="tab-panel hidden">
     <div class="no-print flex flex-wrap items-center gap-2 mb-3">
-      <button onclick="exportTableCSV('t4TableEn','en_months')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">ইংরেজি মাস CSV</button>
-      <button onclick="exportTableCSV('t4TableBn','bn_months')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">বাংলা মাস CSV</button>
-      <button onclick="exportTableCSV('t4TableAr','ar_months')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">আরবি মাস CSV</button>
-      <button onclick="exportTableXLSX('t4TableEn','en_months')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export (সব)</button>
+      <button onclick="exportTableCSV('t4TableEn','en_months')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">ইংরেজি মাস CSV</button>
+      <button onclick="exportTableCSV('t4TableBn','bn_months')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">বাংলা মাস CSV</button>
+      <button onclick="exportTableCSV('t4TableAr','ar_months')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">আরবি মাস CSV</button>
+      <button onclick="exportTableXLSX('t4TableEn','en_months')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export (সব)</button>
     </div>
     <h2 class="text-lg font-bold text-emerald-700 mb-2">🗓️ ইংরেজি মাস (English Months)</h2>
-    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
       <table id="t4TableEn" class="w-full text-sm sm:text-base">
         <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">English</th><th class="p-2 text-left">বাংলা উচ্চারণ</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyEn"></tbody>
@@ -192,7 +233,7 @@
     </div>
     <h2 class="text-lg font-bold text-emerald-700 mb-2">🌾 বাংলা মাস (Bengali Calendar Months)</h2>
     <p class="text-xs text-slate-500 mb-2">* ২০১৯ সালের সংস্কারিত বাংলা পঞ্জিকা অনুযায়ী — ফাল্গুন লিপ ইয়ারে ৩১ দিন হয়।</p>
-    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
       <table id="t4TableBn" class="w-full text-sm sm:text-base">
         <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">আনুমানিক গ্রেগরিয়ান সময়কাল</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyBn"></tbody>
@@ -200,7 +241,7 @@
     </div>
     <h2 class="text-lg font-bold text-emerald-700 mb-2">🌙 আরবি (হিজরি) মাস</h2>
     <p class="text-xs text-slate-500 mb-2">* চন্দ্র মাস হওয়ায় দিন সংখ্যা চাঁদ দেখার উপর নির্ভর করে — সাধারণত ২৯ অথবা ৩০ দিন।</p>
-    <div class="overflow-x-auto rounded-xl shadow bg-white">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
       <table id="t4TableAr" class="w-full text-sm sm:text-base">
         <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">আরবি/বাংলা নাম</th><th class="p-2 text-left">English</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyAr"></tbody>
@@ -211,26 +252,26 @@
   <!-- ================= TAB 5: SEASONS ================= -->
   <section id="t5" class="tab-panel hidden">
     <div class="no-print flex flex-wrap items-center gap-2 mb-3">
-      <button onclick="exportTableCSV('t5TableBn','bn_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">বাংলা ঋতু CSV</button>
-      <button onclick="exportTableCSV('t5TableEn','en_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">English Seasons CSV</button>
-      <button onclick="exportTableCSV('t5TableAr','ar_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">আরবি ঋতু CSV</button>
+      <button onclick="exportTableCSV('t5TableBn','bn_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">বাংলা ঋতু CSV</button>
+      <button onclick="exportTableCSV('t5TableEn','en_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">English Seasons CSV</button>
+      <button onclick="exportTableCSV('t5TableAr','ar_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">আরবি ঋতু CSV</button>
     </div>
     <h2 class="text-lg font-bold text-teal-700 mb-2">বাংলা ৬ ঋতু</h2>
-    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
       <table id="t5TableBn" class="w-full text-sm sm:text-base">
         <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">ঋতু</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">English Meaning</th></tr></thead>
         <tbody id="t5BodyBn"></tbody>
       </table>
     </div>
     <h2 class="text-lg font-bold text-teal-700 mb-2">English Seasons</h2>
-    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
       <table id="t5TableEn" class="w-full text-sm sm:text-base">
         <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">Season</th><th class="p-2 text-left">বাংলা অর্থ</th><th class="p-2 text-left">Months (approx.)</th></tr></thead>
         <tbody id="t5BodyEn"></tbody>
       </table>
     </div>
     <h2 class="text-lg font-bold text-teal-700 mb-2">আরবি ঋতু</h2>
-    <div class="overflow-x-auto rounded-xl shadow bg-white">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
       <table id="t5TableAr" class="w-full text-sm sm:text-base">
         <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">আরবি নাম</th><th class="p-2 text-left">উচ্চারণ</th><th class="p-2 text-left">বাংলা অর্থ</th></tr></thead>
         <tbody id="t5BodyAr"></tbody>
@@ -242,10 +283,10 @@
   <section id="t6" class="tab-panel hidden">
     <div class="no-print flex flex-wrap items-center gap-2 mb-3">
       <input id="t6Search" type="text" placeholder="🔍 সার্চ করুন (সংখ্যা বা রোমান)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
-      <button onclick="exportTableCSV('t6Table','roman')" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
-      <button onclick="exportTableXLSX('t6Table','roman')" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
+      <button onclick="exportTableCSV('t6Table','roman')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
+      <button onclick="exportTableXLSX('t6Table','roman')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export</button>
     </div>
-    <div class="overflow-x-auto rounded-xl shadow bg-white mb-6">
+    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
       <table id="t6Table" class="w-full text-sm sm:text-base">
         <thead class="bg-purple-600 text-white sticky top-0"><tr><th class="p-2 text-left">সংখ্যা</th><th class="p-2 text-left">Roman Numeral</th></tr></thead>
         <tbody id="t6Body"></tbody>
@@ -267,19 +308,19 @@
   <!-- ================= TAB 7: UNIT CONVERTER ================= -->
   <section id="t7" class="tab-panel hidden">
     <div class="grid sm:grid-cols-2 gap-4">
-      <div class="bg-white rounded-xl shadow p-4">
+      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
         <h3 class="font-bold text-sky-700 mb-3">📏 Length (দৈর্ঘ্য)</h3>
         <div id="conv_length" class="converter-block" data-units='{"m":1,"cm":0.01,"mm":0.001,"inch":0.0254,"ft":0.3048}'></div>
       </div>
-      <div class="bg-white rounded-xl shadow p-4">
+      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
         <h3 class="font-bold text-sky-700 mb-3">🧊 Volume (গ্যাস/আয়তন)</h3>
         <div id="conv_volume" class="converter-block" data-units='{"cubic meter (m³)":1,"cubic feet (ft³)":0.0283168,"MSCM":1000,"MMSCM":1000000,"MSCF":28.3168,"MMSCF":28316.8}'></div>
       </div>
-      <div class="bg-white rounded-xl shadow p-4">
+      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
         <h3 class="font-bold text-sky-700 mb-3">🌡️ Temperature (তাপমাত্রা)</h3>
         <div id="conv_temp" class="converter-block-temp"></div>
       </div>
-      <div class="bg-white rounded-xl shadow p-4">
+      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
         <h3 class="font-bold text-sky-700 mb-3">🧭 Pressure (চাপ)</h3>
         <div id="conv_pressure" class="converter-block" data-units='{"bar":1,"atm":1.01325,"psi":0.0689476,"kg/cm²":0.980665}'></div>
       </div>
@@ -288,7 +329,7 @@
 
   <!-- ================= TAB 8: CUSTOM INFO ================= -->
   <section id="t8" class="tab-panel hidden">
-    <div class="no-print bg-white rounded-xl shadow p-4 mb-4">
+    <div class="no-print bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4 mb-4">
       <h3 class="font-bold text-pink-700 mb-3">➕ নতুন তথ্য যোগ করুন</h3>
       <div class="grid sm:grid-cols-2 gap-3">
         <input id="c_title" type="text" placeholder="শিরোনাম / Title" class="border rounded-lg px-3 py-2">
@@ -301,12 +342,12 @@
         <textarea id="c_text" placeholder="বিস্তারিত তথ্য লিখুন..." class="border rounded-lg px-3 py-2 sm:col-span-2" rows="3"></textarea>
         <input id="c_image" type="file" accept="image/*" class="border rounded-lg px-3 py-2 sm:col-span-2">
       </div>
-      <button onclick="addCustomEntry()" class="mt-3 px-4 py-2 bg-pink-600 text-white rounded-lg">যোগ করুন</button>
+      <button onclick="addCustomEntry()" class="mt-3 px-4 py-2 bg-gradient-to-br from-pink-500 to-pink-700 text-white rounded-xl btn-glow">যোগ করুন</button>
     </div>
     <div class="no-print flex flex-wrap items-center gap-2 mb-4">
-      <button onclick="exportCustomCSV()" class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm">CSV Export</button>
-      <button onclick="exportCustomXLSX()" class="px-3 py-2 bg-emerald-700 text-white rounded-lg text-sm">Excel Export</button>
-      <label class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm cursor-pointer">
+      <button onclick="exportCustomCSV()" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
+      <button onclick="exportCustomXLSX()" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export</button>
+      <label class="px-3 py-2 bg-orange-500 text-white rounded-xl text-sm btn-glow cursor-pointer">
         Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importCustom(event)">
       </label>
     </div>
@@ -332,11 +373,11 @@
     </div>
     <select id="continentSelect" class="border rounded-lg px-3 py-2 mb-4 w-full sm:w-auto"></select>
     <div id="continentCountries" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4"></div>
-    <div class="bg-white rounded-xl shadow p-3">
+    <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-3">
       <h4 class="font-semibold text-cyan-700 mb-2 text-sm">➕ কাস্টম দেশ/তথ্য যোগ করুন</h4>
       <div class="flex flex-wrap gap-2">
         <input id="customCountryInput" type="text" placeholder="দেশের নাম বা তথ্য" class="border rounded-lg px-3 py-2 flex-1 min-w-[160px]">
-        <button onclick="addCustomContinentItem()" class="px-3 py-2 bg-cyan-600 text-white rounded-lg text-sm">যোগ করুন</button>
+        <button onclick="addCustomContinentItem()" class="px-3 py-2 bg-cyan-600 text-white rounded-xl text-sm btn-glow">যোগ করুন</button>
       </div>
     </div>
   </section>
@@ -411,7 +452,7 @@ const CUSTOM_FONTS_KEY = 'customFontsListV2';
 function loadCustomFontsList(){
   try{ return JSON.parse(localStorage.getItem(CUSTOM_FONTS_KEY)) || []; }catch(e){ return []; }
 }
-function saveCustomFontsList(list){ localStorage.setItem(CUSTOM_FONTS_KEY, JSON.stringify(list)); }
+function saveCustomFontsList(list){ localStorage.setItem(CUSTOM_FONTS_KEY, JSON.stringify(list)); cloudPush(CUSTOM_FONTS_KEY, list); }
 
 function mimeForExt(name){
   const ext = name.split('.').pop().toLowerCase();
@@ -526,8 +567,8 @@ tabButtons.forEach(btn=>{
   btn.addEventListener('click', ()=>{
     panels.forEach(p=>p.classList.add('hidden'));
     document.getElementById(btn.dataset.tab).classList.remove('hidden');
-    tabButtons.forEach(b=>b.classList.remove('ring-4','ring-offset-2'));
-    btn.classList.add('ring-4','ring-offset-2');
+    tabButtons.forEach(b=>b.classList.remove('active-tab'));
+    btn.classList.add('active-tab');
   });
 });
 tabButtons[0].click();
@@ -616,7 +657,7 @@ const t3Body = document.getElementById('t3Body');
 const weekColors = ['bg-amber-100','bg-amber-200','bg-amber-100','bg-amber-200','bg-amber-100','bg-amber-200','bg-amber-100'];
 weekdays.forEach(([en,bn],idx)=>{
   const div = document.createElement('div');
-  div.className = `${weekColors[idx]} rounded-xl shadow p-4 text-center`;
+  div.className = `${weekColors[idx]} rounded-2xl shadow-lg premium-card border border-white/60 p-4 text-center`;
   div.innerHTML = `<div class="text-2xl font-bold">${bn}</div><div class="text-slate-600">${en}</div>`;
   t3Cards.appendChild(div);
   const tr = document.createElement('tr');
@@ -749,7 +790,7 @@ tempCalc();
 ============================================================ */
 const CUSTOM_KEY='customInfoEntries_v1';
 function loadCustom(){ try{ return JSON.parse(localStorage.getItem(CUSTOM_KEY))||[]; }catch(e){ return []; } }
-function saveCustom(list){ localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); }
+function saveCustom(list){ localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); cloudPush(CUSTOM_KEY, list); }
 function renderCustom(){
   const list = loadCustom();
   const container = document.getElementById('customList');
@@ -757,7 +798,7 @@ function renderCustom(){
   if(list.length===0){ container.innerHTML = `<p class="text-slate-400 col-span-full text-center py-8">এখনো কোনো তথ্য যোগ করা হয়নি।</p>`; return; }
   list.forEach((item,idx)=>{
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-xl shadow p-4';
+    div.className = 'bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4';
     div.innerHTML = `
       <div class="flex justify-between items-start mb-2">
         <span class="text-xs px-2 py-1 rounded-full bg-pink-100 text-pink-700 font-semibold">${item.category||''}</span>
@@ -926,7 +967,7 @@ const bdData = {
 };
 const BD_TREE_KEY = 'bdCustomGeoTree';
 function loadBdTree(){ try{ return JSON.parse(localStorage.getItem(BD_TREE_KEY)) || {}; }catch(e){ return {}; } }
-function saveBdTree(tree){ localStorage.setItem(BD_TREE_KEY, JSON.stringify(tree)); }
+function saveBdTree(tree){ localStorage.setItem(BD_TREE_KEY, JSON.stringify(tree)); cloudPush(BD_TREE_KEY, tree); }
 
 const bdDivisionSel = document.getElementById('bdDivision');
 const bdDistrictSel = document.getElementById('bdDistrict');
@@ -955,12 +996,12 @@ function renderBdCascade(){
 
   function buildLevel(label, colorClass, items, onAdd, onSelect, selectedRenderer){
     const wrap = document.createElement('div');
-    wrap.className = 'bg-white rounded-xl shadow p-3';
+    wrap.className = 'bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-3';
     wrap.innerHTML = `<div class="font-semibold ${colorClass} mb-2">${label}</div>
       <div class="flex flex-wrap gap-2 mb-2 level-chips"></div>
       <div class="flex gap-2">
         <input type="text" placeholder="নতুন ${label} যোগ করুন" class="border rounded-lg px-2 py-1.5 text-sm flex-1 level-input">
-        <button class="px-3 py-1.5 bg-lime-600 text-white rounded-lg text-sm level-add">যোগ</button>
+        <button class="px-3 py-1.5 bg-gradient-to-br from-lime-500 to-lime-700 text-white rounded-xl text-sm btn-glow level-add">যোগ</button>
       </div>`;
     const chipsDiv = wrap.querySelector('.level-chips');
     items.forEach(item=>{
@@ -1027,7 +1068,7 @@ const continentData = {
 };
 const CONTINENT_CUSTOM_KEY = 'continentCustomData';
 function loadContinentCustom(){ try{ return JSON.parse(localStorage.getItem(CONTINENT_CUSTOM_KEY)) || {}; }catch(e){ return {}; } }
-function saveContinentCustom(d){ localStorage.setItem(CONTINENT_CUSTOM_KEY, JSON.stringify(d)); }
+function saveContinentCustom(d){ localStorage.setItem(CONTINENT_CUSTOM_KEY, JSON.stringify(d)); cloudPush(CONTINENT_CUSTOM_KEY, d); }
 
 const continentSelect = document.getElementById('continentSelect');
 Object.keys(continentData).forEach(c=>{
@@ -1043,7 +1084,7 @@ function renderContinentCountries(){
   all.forEach((country, idx)=>{
     const isCustom = idx >= continentData[c].length;
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-lg shadow px-3 py-2 text-sm flex justify-between items-center';
+    div.className = 'bg-white rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all border border-slate-100 px-3 py-2 text-sm flex justify-between items-center';
     div.innerHTML = `<span>${country}</span>${isCustom?`<button class="text-red-400 text-xs" onclick="removeCustomContinentItem('${c}', ${idx-continentData[c].length})">✕</button>`:''}`;
     container.appendChild(div);
   });
@@ -1075,7 +1116,7 @@ renderContinentCountries();
 const oceanData = ["প্রশান্ত মহাসাগর (Pacific Ocean)","আটলান্টিক মহাসাগর (Atlantic Ocean)","ভারত মহাসাগর (Indian Ocean)","দক্ষিণ মহাসাগর (Southern Ocean)","সুমেরু মহাসাগর (Arctic Ocean)"];
 const OCEAN_CUSTOM_KEY = 'oceanCustomData';
 function loadOceanCustom(){ try{ return JSON.parse(localStorage.getItem(OCEAN_CUSTOM_KEY)) || {}; }catch(e){ return {}; } }
-function saveOceanCustom(d){ localStorage.setItem(OCEAN_CUSTOM_KEY, JSON.stringify(d)); }
+function saveOceanCustom(d){ localStorage.setItem(OCEAN_CUSTOM_KEY, JSON.stringify(d)); cloudPush(OCEAN_CUSTOM_KEY, d); }
 
 function renderOceans(){
   const container = document.getElementById('oceanList');
@@ -1084,12 +1125,12 @@ function renderOceans(){
   oceanData.forEach(ocean=>{
     const items = custom[ocean] || [];
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-xl shadow p-3';
+    div.className = 'bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-3';
     div.innerHTML = `<div class="font-semibold text-blue-700 mb-2">🌊 ${ocean}</div>
       <div class="flex flex-wrap gap-1.5 mb-2 ocean-chips"></div>
       <div class="flex gap-2">
         <input type="text" placeholder="উল্লেখযোগ্য সাগর/তথ্য যোগ করুন" class="border rounded-lg px-2 py-1.5 text-sm flex-1 ocean-input">
-        <button class="px-3 py-1.5 bg-blue-700 text-white rounded-lg text-sm ocean-add">যোগ</button>
+        <button class="px-3 py-1.5 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl text-sm btn-glow ocean-add">যোগ</button>
       </div>`;
     const chipsDiv = div.querySelector('.ocean-chips');
     items.forEach((item,idx)=>{
@@ -1118,6 +1159,83 @@ function removeOceanItem(ocean, idx){
   renderOceans();
 }
 renderOceans();
+
+/* ============================================================
+   CLOUD SYNC (Supabase, configured via Vercel environment variables)
+   - Reads keys from /api/config (a Vercel serverless function that reads
+     process.env.SUPABASE_URL / SUPABASE_ANON_KEY at request time).
+   - If those env vars are not set, the app silently stays in local-only mode.
+   - localStorage is always written first (instant UI), Supabase is a
+     best-effort background sync layer on top, same pattern as bkbstock.
+============================================================ */
+const SB = { client: null, ready: false };
+
+const SYNC_KEYS = {
+  'customFontsListV2': { rerender: ()=>{
+      loadCustomFontsList().forEach(f=>injectCustomFontFace(f.familyName, f.dataUrl));
+      rebuildFontDropdown(); renderCustomFontChips();
+  }},
+  'customInfoEntries_v1': { rerender: renderCustom },
+  'bdCustomGeoTree': { rerender: renderBdCascade },
+  'continentCustomData': { rerender: renderContinentCountries },
+  'oceanCustomData': { rerender: renderOceans }
+};
+
+function setSyncStatus(online){
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  if(!dot || !label) return;
+  if(online){ dot.classList.remove('offline'); label.textContent = 'ক্লাউড সিঙ্ক সক্রিয়'; }
+  else { dot.classList.add('offline'); label.textContent = 'লোকাল মোড'; }
+}
+
+async function cloudPush(key, value){
+  if(!SB.ready) return;
+  try{
+    await SB.client.from('app_kv').upsert({ key, value, updated_at: new Date().toISOString() });
+  }catch(e){ console.warn('cloud sync push failed for', key, e); }
+}
+
+async function pullAllFromCloud(){
+  if(!SB.ready) return;
+  try{
+    const { data, error } = await SB.client.from('app_kv').select('key,value');
+    if(error){ console.warn('cloud pull failed', error); return; }
+    data.forEach(row=>{
+      if(SYNC_KEYS[row.key]) localStorage.setItem(row.key, JSON.stringify(row.value));
+    });
+    Object.values(SYNC_KEYS).forEach(cfg=> cfg.rerender && cfg.rerender());
+  }catch(e){ console.warn('cloud pull error', e); }
+}
+
+function subscribeRealtimeSync(){
+  SB.client.channel('app_kv_live')
+    .on('postgres_changes', { event:'*', schema:'public', table:'app_kv' }, (payload)=>{
+      const row = (payload.new && Object.keys(payload.new).length) ? payload.new : payload.old;
+      if(!row || !SYNC_KEYS[row.key]) return;
+      localStorage.setItem(row.key, JSON.stringify(row.value));
+      SYNC_KEYS[row.key].rerender();
+    })
+    .subscribe();
+}
+
+async function initCloudSync(){
+  try{
+    const res = await fetch('/api/config');
+    if(!res.ok) throw new Error('config endpoint not available');
+    const cfg = await res.json();
+    if(!cfg.supabaseUrl || !cfg.supabaseAnonKey){ setSyncStatus(false); return; }
+    SB.client = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+    SB.ready = true;
+    setSyncStatus(true);
+    await pullAllFromCloud();
+    subscribeRealtimeSync();
+  }catch(e){
+    console.warn('Cloud sync unavailable — running in local-only mode.', e);
+    setSyncStatus(false);
+  }
+}
+initCloudSync();
 
 /* ============================================================
    SERVICE WORKER REGISTRATION

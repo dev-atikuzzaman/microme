@@ -26,6 +26,13 @@ self.addEventListener('fetch', (event) => {
   // Never intercept third-party CDN or cross-origin requests (Tailwind, xlsx, fonts etc.)
   if (!event.request.url.startsWith(self.location.origin)) return;
 
+  // Never cache API routes (e.g. /api/config) — always go to the network so
+  // Supabase credentials / sync status stay current.
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       return cached || fetch(event.request).then((response) => {
