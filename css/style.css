@@ -1,0 +1,107 @@
+@font-face{
+    font-family:'SiyamRupali';
+    src: local('Siyam Rupali'), local('SiyamRupali');
+  }
+  @font-face{
+    font-family:'Nikosh';
+    src: local('Nikosh');
+  }
+  @font-face{
+    font-family:'NikoshBan';
+    src: local('NikoshBan'), local('Nikosh Ban'), local('Nikosh Bangla');
+  }
+  :root{
+    --app-font-size: 16px;
+    --app-font-color: #F3EEDD;
+  }
+  html,body{
+    font-family: var(--app-font-family, 'SiyamRupali','Hind Siliguri','sans-serif');
+    font-size: var(--app-font-size);
+    color: var(--app-font-color);
+  }
+  @font-face{
+    font-family:'NotoBengaliFallback';
+    src: local('Noto Sans Bengali');
+  }
+  h1,h2,h3,h4{ font-family:'Noto Serif Bengali','Hind Siliguri',serif; }
+
+  .tab-scroll::-webkit-scrollbar{ height:8px; }
+  .tab-scroll::-webkit-scrollbar-thumb{ background:rgba(212,168,87,.4); border-radius:8px; }
+
+  .flip-card{ perspective:1000px; }
+  .flip-inner{ transition: transform .5s; transform-style:preserve-3d; }
+  .flip-card:hover .flip-inner{ transform: rotateY(180deg); }
+  .flip-front,.flip-back{ backface-visibility:hidden; position:absolute; inset:0; }
+  .flip-back{ transform: rotateY(180deg); }
+
+  /* ===== PREMIUM DARK "INK & GOLD" THEME ===== */
+  body{
+    background-color:#0F1220;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(139, 92, 246, 0.10), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(212, 168, 87, 0.14), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(212, 168, 87, 0.06), transparent 50%);
+    background-attachment: fixed;
+  }
+  @keyframes fadeSlideIn{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .tab-panel:not(.hidden){ animation: fadeSlideIn .35s ease-out; }
+
+  .tab-btn{ position:relative; overflow:hidden; box-shadow: 0 4px 14px rgba(0,0,0,.35); transform: translateY(0); }
+  .tab-btn:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.45); }
+  .tab-btn.active-tab{ box-shadow: 0 0 0 2px #D4A857, 0 0 24px -4px rgba(212,168,87,.5); transform: translateY(-1px) scale(1.02); background-color:#171B2E; color:#E8C77E; }
+
+  .glass{ background: rgba(23, 27, 46, 0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .glass-header{ background: rgba(23, 27, 46, 0.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
+  table thead tr{ background-size:200% auto; }
+  table tbody tr{ transition: background-color .15s ease, transform .15s ease; }
+  table tbody tr:hover{ filter: brightness(1.35); }
+
+  .premium-card{ transition: transform .2s ease, box-shadow .2s ease; }
+  .premium-card:hover{ transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(212,168,87,.15); }
+
+  .btn-glow{ transition: filter .15s ease, transform .15s ease; box-shadow: 0 3px 14px rgba(0,0,0,.35); }
+  .btn-glow:hover{ filter: brightness(1.15); transform: translateY(-1px); }
+  .btn-glow:active{ transform: translateY(0); }
+
+  #syncDot{ box-shadow: 0 0 0 0 rgba(34,197,94,.7); animation: pulseDot 2s infinite; }
+  @keyframes pulseDot{
+    0%{ box-shadow:0 0 0 0 rgba(34,197,94,.6); }
+    70%{ box-shadow:0 0 0 8px rgba(34,197,94,0); }
+    100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); }
+  }
+  #syncDot.offline{ animation:none; background:#64748b !important; box-shadow:none; }
+
+  /* Dark-themed form controls (applies globally, no per-element class edits needed) */
+  input[type="text"], input[type="number"], input[type="search"], select, textarea{
+    background-color: rgba(23,27,46,0.75);
+    color:#F7F3E8;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  input::placeholder, textarea::placeholder{ color:#9CA3C4; opacity:.8; }
+  select option{ background-color:#171B2E; color:#F7F3E8; }
+  input:focus, select:focus, textarea:focus{
+    outline:none !important;
+    box-shadow: 0 0 0 2px rgba(212,168,87,.55) !important;
+    border-color: rgba(212,168,87,.55) !important;
+  }
+  input[type="file"]{ color:#D9D4C4; }
+  input[type="file"]::file-selector-button{
+    background: linear-gradient(135deg,#D4A857,#A67A2E);
+    color:#0F1220; border:none; border-radius:8px; padding:5px 12px; margin-right:8px; cursor:pointer; font-weight:600;
+    transition: filter .15s ease;
+  }
+  input[type="file"]::file-selector-button:hover{ filter:brightness(1.1); }
+  input[type="color"]{ background:rgba(23,27,46,.75); border-color:rgba(255,255,255,.12); }
+  input[type="range"]{ accent-color:#D4A857; }
+
+  @media print{
+    body{ background:white !important; }
+    body *{ visibility:hidden; }
+    #printArea, #printArea *{ visibility:visible; color:black !important; }
+    #printArea{ position:absolute; left:0; top:0; width:100%; }
+    .no-print{ display:none !important; }
+  }
