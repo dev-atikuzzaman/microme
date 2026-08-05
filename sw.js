@@ -1,9 +1,27 @@
-const CACHE_NAME = 'tottokosh-cache-v1';
+const CACHE_NAME = 'tottokosh-cache-v2';
 const ASSETS = [
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './css/style.css',
+  './js/tailwind-config.js',
+  './js/fonts.js',
+  './js/tabs.js',
+  './js/tab1-numbers.js',
+  './js/tab2-ordinals.js',
+  './js/tab3-weekdays.js',
+  './js/tab4-months.js',
+  './js/tab5-seasons.js',
+  './js/tab6-roman.js',
+  './js/tab7-converter.js',
+  './js/tab8-custom.js',
+  './js/export-import.js',
+  './js/tab9-bangladesh.js',
+  './js/tab10-continents.js',
+  './js/tab11-oceans.js',
+  './js/cloud-sync.js',
+  './js/main.js'
 ];
 
 self.addEventListener('install', (event) => {
