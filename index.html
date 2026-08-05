@@ -3,10 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta name="theme-color" content="#4338ca">
+<meta name="theme-color" content="#171B2E">
 <title>বহুমুখী তথ্যকোষ | Multi-Reference App</title>
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Noto Serif Bengali"', '"Fraunces"', 'serif'],
+          ui: ['"Hind Siliguri"', '"Inter"', 'sans-serif'],
+        },
+        colors: {
+          ink: { 950:'#0A0D18', 900:'#0F1220', 800:'#171B2E', 700:'#20263D', 600:'#2B324D' },
+          parchment: { 100:'#F7F3E8', 200:'#EDEAE0', 300:'#D9D4C4', 400:'#9CA3C4' },
+          gold: { 300:'#E8C77E', 400:'#D4A857', 500:'#C1943F', 600:'#A67A2E' },
+        },
+        boxShadow: {
+          glow: '0 0 40px -8px rgba(212, 168, 87, 0.35)',
+          card: '0 4px 24px -4px rgba(0,0,0,0.45)',
+        },
+        animation: {
+          'fade-in': 'fadeIn 0.4s ease-out',
+          'rise': 'rise 0.5s ease-out',
+        },
+        keyframes: {
+          fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+          rise: { '0%': { opacity: 0, transform: 'translateY(12px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+        },
+      },
+    },
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@500;700&family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
@@ -24,10 +55,10 @@
   }
   :root{
     --app-font-size: 16px;
-    --app-font-color: #1e1b2e;
+    --app-font-color: #F3EEDD;
   }
   html,body{
-    font-family: var(--app-font-family, 'SiyamRupali','Noto Sans Bengali','sans-serif');
+    font-family: var(--app-font-family, 'SiyamRupali','Hind Siliguri','sans-serif');
     font-size: var(--app-font-size);
     color: var(--app-font-color);
   }
@@ -35,9 +66,10 @@
     font-family:'NotoBengaliFallback';
     src: local('Noto Sans Bengali');
   }
+  h1,h2,h3,h4{ font-family:'Noto Serif Bengali','Hind Siliguri',serif; }
 
   .tab-scroll::-webkit-scrollbar{ height:8px; }
-  .tab-scroll::-webkit-scrollbar-thumb{ background:#c7c7c7; border-radius:8px; }
+  .tab-scroll::-webkit-scrollbar-thumb{ background:rgba(212,168,87,.4); border-radius:8px; }
 
   .flip-card{ perspective:1000px; }
   .flip-inner{ transition: transform .5s; transform-style:preserve-3d; }
@@ -45,9 +77,13 @@
   .flip-front,.flip-back{ backface-visibility:hidden; position:absolute; inset:0; }
   .flip-back{ transform: rotateY(180deg); }
 
-  /* ===== PREMIUM VISUAL LAYER ===== */
+  /* ===== PREMIUM DARK "INK & GOLD" THEME ===== */
   body{
-    background: linear-gradient(160deg, #eef2ff 0%, #fdf4ff 35%, #fff7ed 65%, #ecfeff 100%);
+    background-color:#0F1220;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(139, 92, 246, 0.10), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(212, 168, 87, 0.14), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(212, 168, 87, 0.06), transparent 50%);
     background-attachment: fixed;
   }
   @keyframes fadeSlideIn{
@@ -56,21 +92,22 @@
   }
   .tab-panel:not(.hidden){ animation: fadeSlideIn .35s ease-out; }
 
-  .tab-btn{ position:relative; overflow:hidden; box-shadow: 0 4px 14px rgba(0,0,0,.12); transform: translateY(0); }
-  .tab-btn:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.18); }
-  .tab-btn.active-tab{ box-shadow: inset 0 0 0 3px rgba(255,255,255,.85), 0 8px 22px rgba(0,0,0,.25); transform: translateY(-1px) scale(1.02); }
+  .tab-btn{ position:relative; overflow:hidden; box-shadow: 0 4px 14px rgba(0,0,0,.35); transform: translateY(0); }
+  .tab-btn:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.45); }
+  .tab-btn.active-tab{ box-shadow: 0 0 0 2px #D4A857, 0 0 24px -4px rgba(212,168,87,.5); transform: translateY(-1px) scale(1.02); background-color:#171B2E; color:#E8C77E; }
 
-  .glass-header{ background: rgba(255,255,255,.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .glass{ background: rgba(23, 27, 46, 0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .glass-header{ background: rgba(23, 27, 46, 0.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 
   table thead tr{ background-size:200% auto; }
   table tbody tr{ transition: background-color .15s ease, transform .15s ease; }
-  table tbody tr:hover{ filter: brightness(0.97); }
+  table tbody tr:hover{ filter: brightness(1.35); }
 
   .premium-card{ transition: transform .2s ease, box-shadow .2s ease; }
-  .premium-card:hover{ transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,.12); }
+  .premium-card:hover{ transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(212,168,87,.15); }
 
-  .btn-glow{ transition: filter .15s ease, transform .15s ease; box-shadow: 0 3px 10px rgba(0,0,0,.15); }
-  .btn-glow:hover{ filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-glow{ transition: filter .15s ease, transform .15s ease; box-shadow: 0 3px 14px rgba(0,0,0,.35); }
+  .btn-glow:hover{ filter: brightness(1.15); transform: translateY(-1px); }
   .btn-glow:active{ transform: translateY(0); }
 
   #syncDot{ box-shadow: 0 0 0 0 rgba(34,197,94,.7); animation: pulseDot 2s infinite; }
@@ -79,11 +116,35 @@
     70%{ box-shadow:0 0 0 8px rgba(34,197,94,0); }
     100%{ box-shadow:0 0 0 0 rgba(34,197,94,0); }
   }
-  #syncDot.offline{ animation:none; background:#94a3b8 !important; box-shadow:none; }
+  #syncDot.offline{ animation:none; background:#64748b !important; box-shadow:none; }
+
+  /* Dark-themed form controls (applies globally, no per-element class edits needed) */
+  input[type="text"], input[type="number"], input[type="search"], select, textarea{
+    background-color: rgba(23,27,46,0.75);
+    color:#F7F3E8;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+  input::placeholder, textarea::placeholder{ color:#9CA3C4; opacity:.8; }
+  select option{ background-color:#171B2E; color:#F7F3E8; }
+  input:focus, select:focus, textarea:focus{
+    outline:none !important;
+    box-shadow: 0 0 0 2px rgba(212,168,87,.55) !important;
+    border-color: rgba(212,168,87,.55) !important;
+  }
+  input[type="file"]{ color:#D9D4C4; }
+  input[type="file"]::file-selector-button{
+    background: linear-gradient(135deg,#D4A857,#A67A2E);
+    color:#0F1220; border:none; border-radius:8px; padding:5px 12px; margin-right:8px; cursor:pointer; font-weight:600;
+    transition: filter .15s ease;
+  }
+  input[type="file"]::file-selector-button:hover{ filter:brightness(1.1); }
+  input[type="color"]{ background:rgba(23,27,46,.75); border-color:rgba(255,255,255,.12); }
+  input[type="range"]{ accent-color:#D4A857; }
 
   @media print{
+    body{ background:white !important; }
     body *{ visibility:hidden; }
-    #printArea, #printArea *{ visibility:visible; }
+    #printArea, #printArea *{ visibility:visible; color:black !important; }
     #printArea{ position:absolute; left:0; top:0; width:100%; }
     .no-print{ display:none !important; }
   }
@@ -92,59 +153,60 @@
 <body class="min-h-screen">
 
 <!-- ===================== HEADER / CONTROLS ===================== -->
-<header class="no-print sticky top-0 z-30 glass-header shadow-lg border-b border-white/50">
+<header class="no-print sticky top-0 z-30 glass-header shadow-lg border-b border-white/5">
   <div class="max-w-7xl mx-auto px-3 py-3">
     <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-amber-500 bg-clip-text text-transparent drop-shadow-sm flex items-center gap-2">
-        📚 বহুমুখী তথ্যকোষ
-        <span class="flex items-center gap-1 text-xs font-normal text-slate-500 bg-white/70 rounded-full px-2 py-0.5 border">
+      <h1 class="text-lg sm:text-xl font-bold text-parchment-100 tracking-wide drop-shadow-sm flex items-center gap-2.5">
+        <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-ink-700 to-ink-900 ring-1 ring-gold-500/40 flex items-center justify-center text-lg shadow-glow shrink-0">📚</span>
+        <span class="bg-gradient-to-r from-gold-300 via-parchment-100 to-gold-400 bg-clip-text text-transparent">বহুমুখী তথ্যকোষ</span>
+        <span class="flex items-center gap-1 text-xs font-normal text-parchment-400 bg-ink-800/60 rounded-full px-2 py-0.5 ring-1 ring-white/10">
           <span id="syncDot" class="offline w-2 h-2 rounded-full bg-slate-400 inline-block"></span>
           <span id="syncLabel">লোকাল মোড</span>
         </span>
       </h1>
       <div class="flex flex-wrap items-center gap-2 text-sm">
-        <label class="flex items-center gap-1">ফন্ট:
-          <select id="fontFamilySelect" class="border rounded px-2 py-1 max-w-[140px]"></select>
+        <label class="flex items-center gap-1 text-parchment-300">ফন্ট:
+          <select id="fontFamilySelect" class="border rounded-lg px-2 py-1 max-w-[140px]"></select>
         </label>
-        <button id="fontManagerBtn" title="নতুন কাস্টম ফন্ট আপলোড করুন" class="px-2 py-1.5 rounded-xl bg-gradient-to-br from-fuchsia-600 to-fuchsia-800 text-white btn-glow text-xs">🔤+</button>
-        <label class="flex items-center gap-1">সাইজ:
+        <button id="fontManagerBtn" title="নতুন কাস্টম ফন্ট আপলোড করুন" class="px-2 py-1.5 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 btn-glow text-xs font-semibold">🔤+</button>
+        <label class="flex items-center gap-1 text-parchment-300">সাইজ:
           <input id="fontSizeRange" type="range" min="12" max="32" value="16" class="align-middle">
         </label>
-        <label class="flex items-center gap-1">রং:
-          <input id="fontColorPicker" type="color" value="#1e1b2e" class="w-8 h-8 border rounded cursor-pointer">
+        <label class="flex items-center gap-1 text-parchment-300">রং:
+          <input id="fontColorPicker" type="color" value="#F3EEDD" class="w-8 h-8 border rounded-lg cursor-pointer">
         </label>
-        <button id="printBtn" class="px-3 py-1.5 rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-white btn-glow">🖨️ প্রিন্ট</button>
+        <button id="printBtn" class="px-3 py-1.5 rounded-xl bg-gradient-to-br from-ink-700 to-ink-900 text-parchment-100 ring-1 ring-white/10 btn-glow">🖨️ প্রিন্ট</button>
       </div>
     </div>
   </div>
 
   <!-- Compact Font Manager Popover -->
-  <div id="fontManagerPanel" class="hidden border-t bg-fuchsia-50">
+  <div id="fontManagerPanel" class="hidden border-t border-white/5 glass">
     <div class="max-w-7xl mx-auto px-3 py-2.5">
       <div class="flex flex-wrap items-center gap-2">
-        <input id="newFontName" type="text" placeholder="ফন্টের নাম" class="border rounded px-2 py-1 text-sm w-32">
+        <input id="newFontName" type="text" placeholder="ফন্টের নাম" class="border rounded-lg px-2 py-1 text-sm w-32">
         <input id="newFontFile" type="file" accept=".ttf,.otf,.woff,.woff2" class="text-xs max-w-[160px]">
-        <button onclick="addNewCustomFont()" class="px-2 py-1 bg-fuchsia-700 text-white rounded-lg text-xs btn-glow">যোগ করুন</button>
-        <button onclick="document.getElementById('fontManagerPanel').classList.add('hidden')" class="text-xs text-slate-400 ml-auto">✕ বন্ধ</button>
+        <button onclick="addNewCustomFont()" class="px-2 py-1 bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 font-semibold rounded-lg text-xs btn-glow">যোগ করুন</button>
+        <button onclick="document.getElementById('fontManagerPanel').classList.add('hidden')" class="text-xs text-parchment-400 ml-auto">✕ বন্ধ</button>
       </div>
       <div id="customFontChips" class="flex flex-wrap gap-1.5 mt-2"></div>
     </div>
   </div>
 
   <!-- Tabs -->
-  <nav class="tab-scroll overflow-x-auto border-t border-white/50 pt-2 pb-1 px-1">
+  <nav class="tab-scroll overflow-x-auto border-t border-white/5 pt-2 pb-2 px-1">
     <div class="flex w-max sm:w-full gap-1.5">
-      <button data-tab="t1" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-indigo-500 to-indigo-700 transition">০-১০০ সংখ্যা</button>
-      <button data-tab="t2" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-rose-400 to-rose-600 transition">১-৩১ ক্রম</button>
-      <button data-tab="t3" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-amber-400 to-amber-600 transition">সপ্তাহ</button>
-      <button data-tab="t4" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-emerald-500 to-emerald-700 transition">মাস (ইং/বাং/আরবি)</button>
-      <button data-tab="t5" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-teal-500 to-teal-700 transition">ঋতু</button>
-      <button data-tab="t6" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-purple-500 to-purple-700 transition">রোমান সংখ্যা</button>
-      <button data-tab="t7" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-sky-500 to-sky-700 transition">ইউনিট কনভার্টার</button>
-      <button data-tab="t8" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-pink-500 to-pink-700 transition">কাস্টম তথ্য</button>
-      <button data-tab="t9" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-lime-500 to-lime-700 transition">বাংলাদেশ (জেলা-উপজেলা)</button>
-      <button data-tab="t10" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-cyan-500 to-cyan-700 transition">মহাদেশ ও দেশ</button>
-      <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-br from-blue-600 to-blue-800 transition">মহাসাগর</button>
+      <button data-tab="t1" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🔢</span><span class="text-xs sm:text-sm">০-১০০ সংখ্যা</span></button>
+      <button data-tab="t2" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🔠</span><span class="text-xs sm:text-sm">১-৩১ ক্রম</span></button>
+      <button data-tab="t3" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>📅</span><span class="text-xs sm:text-sm">সপ্তাহ</span></button>
+      <button data-tab="t4" class="tab-btn flex-1 min-w-[150px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🗓️</span><span class="text-xs sm:text-sm">মাস (ইং/বাং/আরবি)</span></button>
+      <button data-tab="t5" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🍂</span><span class="text-xs sm:text-sm">ঋতু</span></button>
+      <button data-tab="t6" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🏛️</span><span class="text-xs sm:text-sm">রোমান সংখ্যা</span></button>
+      <button data-tab="t7" class="tab-btn flex-1 min-w-[140px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>📐</span><span class="text-xs sm:text-sm">ইউনিট কনভার্টার</span></button>
+      <button data-tab="t8" class="tab-btn flex-1 min-w-[120px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>📝</span><span class="text-xs sm:text-sm">কাস্টম তথ্য</span></button>
+      <button data-tab="t9" class="tab-btn flex-1 min-w-[170px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🗺️</span><span class="text-xs sm:text-sm">বাংলাদেশ (জেলা-উপজেলা)</span></button>
+      <button data-tab="t10" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🌍</span><span class="text-xs sm:text-sm">মহাদেশ ও দেশ</span></button>
+      <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🌊</span><span class="text-xs sm:text-sm">মহাসাগর</span></button>
     </div>
   </nav>
 </header>
@@ -161,9 +223,9 @@
         Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t1Table')">
       </label>
     </div>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5">
       <table id="t1Table" class="w-full text-sm sm:text-base">
-        <thead class="bg-indigo-600 text-white sticky top-0">
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-indigo-500/40 sticky top-0">
           <tr>
             <th class="p-2 text-left">সংখ্যা (Digit)</th>
             <th class="p-2 text-left">Number</th>
@@ -187,9 +249,9 @@
         Import <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="importGeneric(event,'t2Table')">
       </label>
     </div>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5">
       <table id="t2Table" class="w-full text-sm sm:text-base">
-        <thead class="bg-rose-500 text-white sticky top-0">
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-rose-500/40 sticky top-0">
           <tr>
             <th class="p-2 text-left">Number</th>
             <th class="p-2 text-left">English Ordinal</th>
@@ -224,26 +286,26 @@
       <button onclick="exportTableCSV('t4TableAr','ar_months')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">আরবি মাস CSV</button>
       <button onclick="exportTableXLSX('t4TableEn','en_months')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export (সব)</button>
     </div>
-    <h2 class="text-lg font-bold text-emerald-700 mb-2">🗓️ ইংরেজি মাস (English Months)</h2>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
+    <h2 class="text-lg font-bold text-emerald-300 mb-2">🗓️ ইংরেজি মাস (English Months)</h2>
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5 mb-6">
       <table id="t4TableEn" class="w-full text-sm sm:text-base">
-        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">English</th><th class="p-2 text-left">বাংলা উচ্চারণ</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-emerald-500/40"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">English</th><th class="p-2 text-left">বাংলা উচ্চারণ</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyEn"></tbody>
       </table>
     </div>
-    <h2 class="text-lg font-bold text-emerald-700 mb-2">🌾 বাংলা মাস (Bengali Calendar Months)</h2>
-    <p class="text-xs text-slate-500 mb-2">* ২০১৯ সালের সংস্কারিত বাংলা পঞ্জিকা অনুযায়ী — ফাল্গুন লিপ ইয়ারে ৩১ দিন হয়।</p>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
+    <h2 class="text-lg font-bold text-emerald-300 mb-2">🌾 বাংলা মাস (Bengali Calendar Months)</h2>
+    <p class="text-xs text-parchment-400 mb-2">* ২০১৯ সালের সংস্কারিত বাংলা পঞ্জিকা অনুযায়ী — ফাল্গুন লিপ ইয়ারে ৩১ দিন হয়।</p>
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5 mb-6">
       <table id="t4TableBn" class="w-full text-sm sm:text-base">
-        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">আনুমানিক গ্রেগরিয়ান সময়কাল</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-emerald-500/40"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">আনুমানিক গ্রেগরিয়ান সময়কাল</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyBn"></tbody>
       </table>
     </div>
-    <h2 class="text-lg font-bold text-emerald-700 mb-2">🌙 আরবি (হিজরি) মাস</h2>
-    <p class="text-xs text-slate-500 mb-2">* চন্দ্র মাস হওয়ায় দিন সংখ্যা চাঁদ দেখার উপর নির্ভর করে — সাধারণত ২৯ অথবা ৩০ দিন।</p>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
+    <h2 class="text-lg font-bold text-emerald-300 mb-2">🌙 আরবি (হিজরি) মাস</h2>
+    <p class="text-xs text-parchment-400 mb-2">* চন্দ্র মাস হওয়ায় দিন সংখ্যা চাঁদ দেখার উপর নির্ভর করে — সাধারণত ২৯ অথবা ৩০ দিন।</p>
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5">
       <table id="t4TableAr" class="w-full text-sm sm:text-base">
-        <thead class="bg-emerald-600 text-white"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">আরবি/বাংলা নাম</th><th class="p-2 text-left">English</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-emerald-500/40"><tr><th class="p-2 text-left">#</th><th class="p-2 text-left">আরবি/বাংলা নাম</th><th class="p-2 text-left">English</th><th class="p-2 text-left">দিন সংখ্যা</th></tr></thead>
         <tbody id="t4BodyAr"></tbody>
       </table>
     </div>
@@ -256,24 +318,24 @@
       <button onclick="exportTableCSV('t5TableEn','en_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">English Seasons CSV</button>
       <button onclick="exportTableCSV('t5TableAr','ar_seasons')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">আরবি ঋতু CSV</button>
     </div>
-    <h2 class="text-lg font-bold text-teal-700 mb-2">বাংলা ৬ ঋতু</h2>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
+    <h2 class="text-lg font-bold text-teal-300 mb-2">বাংলা ৬ ঋতু</h2>
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5 mb-6">
       <table id="t5TableBn" class="w-full text-sm sm:text-base">
-        <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">ঋতু</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">English Meaning</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-teal-500/40"><tr><th class="p-2 text-left">ঋতু</th><th class="p-2 text-left">বাংলা মাস</th><th class="p-2 text-left">English Meaning</th></tr></thead>
         <tbody id="t5BodyBn"></tbody>
       </table>
     </div>
-    <h2 class="text-lg font-bold text-teal-700 mb-2">English Seasons</h2>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
+    <h2 class="text-lg font-bold text-teal-300 mb-2">English Seasons</h2>
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5 mb-6">
       <table id="t5TableEn" class="w-full text-sm sm:text-base">
-        <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">Season</th><th class="p-2 text-left">বাংলা অর্থ</th><th class="p-2 text-left">Months (approx.)</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-teal-500/40"><tr><th class="p-2 text-left">Season</th><th class="p-2 text-left">বাংলা অর্থ</th><th class="p-2 text-left">Months (approx.)</th></tr></thead>
         <tbody id="t5BodyEn"></tbody>
       </table>
     </div>
-    <h2 class="text-lg font-bold text-teal-700 mb-2">আরবি ঋতু</h2>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100">
+    <h2 class="text-lg font-bold text-teal-300 mb-2">আরবি ঋতু</h2>
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5">
       <table id="t5TableAr" class="w-full text-sm sm:text-base">
-        <thead class="bg-teal-600 text-white"><tr><th class="p-2 text-left">আরবি নাম</th><th class="p-2 text-left">উচ্চারণ</th><th class="p-2 text-left">বাংলা অর্থ</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-teal-500/40"><tr><th class="p-2 text-left">আরবি নাম</th><th class="p-2 text-left">উচ্চারণ</th><th class="p-2 text-left">বাংলা অর্থ</th></tr></thead>
         <tbody id="t5BodyAr"></tbody>
       </table>
     </div>
@@ -286,14 +348,14 @@
       <button onclick="exportTableCSV('t6Table','roman')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
       <button onclick="exportTableXLSX('t6Table','roman')" class="px-3 py-2 bg-emerald-700 text-white rounded-xl text-sm btn-glow">Excel Export</button>
     </div>
-    <div class="overflow-x-auto rounded-2xl shadow-xl bg-white/95 border border-slate-100 mb-6">
+    <div class="overflow-x-auto rounded-2xl shadow-card bg-ink-800/80 ring-1 ring-white/5 mb-6">
       <table id="t6Table" class="w-full text-sm sm:text-base">
-        <thead class="bg-purple-600 text-white sticky top-0"><tr><th class="p-2 text-left">সংখ্যা</th><th class="p-2 text-left">Roman Numeral</th></tr></thead>
+        <thead class="bg-ink-800 text-gold-300 border-b-2 border-purple-500/40 sticky top-0"><tr><th class="p-2 text-left">সংখ্যা</th><th class="p-2 text-left">Roman Numeral</th></tr></thead>
         <tbody id="t6Body"></tbody>
       </table>
     </div>
-    <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
-      <h3 class="font-bold text-purple-700 mb-2">১০০-এর বেশি বড় রোমান সংখ্যা লেখার নিয়ম</h3>
+    <div class="bg-purple-500/10 ring-1 ring-purple-500/30 rounded-xl p-4">
+      <h3 class="font-bold text-purple-300 mb-2">১০০-এর বেশি বড় রোমান সংখ্যা লেখার নিয়ম</h3>
       <ul class="list-disc pl-5 space-y-1 text-sm">
         <li>মূল প্রতীক: I=１, V=৫, X=১০, L=৫০, C=১০০, D=৫০০, M=১০০০।</li>
         <li>একই প্রতীক পরপর সর্বোচ্চ ৩ বার লেখা যায় (যেমন III=৩), তবে V, L, D কখনো পুনরাবৃত্তি হয় না।</li>
@@ -308,20 +370,20 @@
   <!-- ================= TAB 7: UNIT CONVERTER ================= -->
   <section id="t7" class="tab-panel hidden">
     <div class="grid sm:grid-cols-2 gap-4">
-      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
-        <h3 class="font-bold text-sky-700 mb-3">📏 Length (দৈর্ঘ্য)</h3>
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4">
+        <h3 class="font-bold text-sky-300 mb-3">📏 Length (দৈর্ঘ্য)</h3>
         <div id="conv_length" class="converter-block" data-units='{"m":1,"cm":0.01,"mm":0.001,"inch":0.0254,"ft":0.3048}'></div>
       </div>
-      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
-        <h3 class="font-bold text-sky-700 mb-3">🧊 Volume (গ্যাস/আয়তন)</h3>
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4">
+        <h3 class="font-bold text-sky-300 mb-3">🧊 Volume (গ্যাস/আয়তন)</h3>
         <div id="conv_volume" class="converter-block" data-units='{"cubic meter (m³)":1,"cubic feet (ft³)":0.0283168,"MSCM":1000,"MMSCM":1000000,"MSCF":28.3168,"MMSCF":28316.8}'></div>
       </div>
-      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
-        <h3 class="font-bold text-sky-700 mb-3">🌡️ Temperature (তাপমাত্রা)</h3>
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4">
+        <h3 class="font-bold text-sky-300 mb-3">🌡️ Temperature (তাপমাত্রা)</h3>
         <div id="conv_temp" class="converter-block-temp"></div>
       </div>
-      <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4">
-        <h3 class="font-bold text-sky-700 mb-3">🧭 Pressure (চাপ)</h3>
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4">
+        <h3 class="font-bold text-sky-300 mb-3">🧭 Pressure (চাপ)</h3>
         <div id="conv_pressure" class="converter-block" data-units='{"bar":1,"atm":1.01325,"psi":0.0689476,"kg/cm²":0.980665}'></div>
       </div>
     </div>
@@ -329,8 +391,8 @@
 
   <!-- ================= TAB 8: CUSTOM INFO ================= -->
   <section id="t8" class="tab-panel hidden">
-    <div class="no-print bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4 mb-4">
-      <h3 class="font-bold text-pink-700 mb-3">➕ নতুন তথ্য যোগ করুন</h3>
+    <div class="no-print bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4 mb-4">
+      <h3 class="font-bold text-pink-300 mb-3">➕ নতুন তথ্য যোগ করুন</h3>
       <div class="grid sm:grid-cols-2 gap-3">
         <input id="c_title" type="text" placeholder="শিরোনাম / Title" class="border rounded-lg px-3 py-2">
         <select id="c_category" class="border rounded-lg px-3 py-2">
@@ -356,7 +418,7 @@
 
   <!-- ================= TAB 9: BANGLADESH DISTRICT->UPAZILA->UNION->VILLAGE ================= -->
   <section id="t9" class="tab-panel hidden">
-    <div class="bg-lime-50 border border-lime-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
+    <div class="bg-lime-500/10 ring-1 ring-lime-500/30 rounded-xl p-3 mb-4 text-xs text-parchment-400">
       ৬৪টি জেলার তালিকা নির্ভুলভাবে দেওয়া আছে। উপজেলা/ইউনিয়ন/গ্রাম — এই বিশাল তালিকা (৫০০+ উপজেলা, হাজার হাজার ইউনিয়ন-গ্রাম) নির্ভুলভাবে মুখস্থ থেকে দেওয়া নিরাপদ নয়, তাই প্রতিটি জেলার নিচে আপনি নিজে উপজেলা/ইউনিয়ন/গ্রাম যোগ করতে পারবেন — একবার যোগ করলে তা এই ব্রাউজারে সংরক্ষিত থাকবে।
     </div>
     <div class="grid sm:grid-cols-2 gap-3 mb-4">
@@ -368,13 +430,13 @@
 
   <!-- ================= TAB 10: CONTINENTS & COUNTRIES ================= -->
   <section id="t10" class="tab-panel hidden">
-    <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
+    <div class="bg-cyan-500/10 ring-1 ring-cyan-500/30 rounded-xl p-3 mb-4 text-xs text-parchment-400">
       প্রতিটি মহাদেশের প্রধান দেশগুলোর তালিকা দেওয়া আছে। কোনো দেশ বাদ পড়লে বা নতুন তথ্য (রাজধানী, নোট ইত্যাদি) যোগ করতে "কাস্টম যোগ করুন" ব্যবহার করুন — তা সংরক্ষিত থাকবে।
     </div>
     <select id="continentSelect" class="border rounded-lg px-3 py-2 mb-4 w-full sm:w-auto"></select>
     <div id="continentCountries" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4"></div>
-    <div class="bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-3">
-      <h4 class="font-semibold text-cyan-700 mb-2 text-sm">➕ কাস্টম দেশ/তথ্য যোগ করুন</h4>
+    <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-3">
+      <h4 class="font-semibold text-cyan-300 mb-2 text-sm">➕ কাস্টম দেশ/তথ্য যোগ করুন</h4>
       <div class="flex flex-wrap gap-2">
         <input id="customCountryInput" type="text" placeholder="দেশের নাম বা তথ্য" class="border rounded-lg px-3 py-2 flex-1 min-w-[160px]">
         <button onclick="addCustomContinentItem()" class="px-3 py-2 bg-cyan-600 text-white rounded-xl text-sm btn-glow">যোগ করুন</button>
@@ -384,7 +446,7 @@
 
   <!-- ================= TAB 11: OCEANS ================= -->
   <section id="t11" class="tab-panel hidden">
-    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4 text-xs text-slate-600">
+    <div class="bg-blue-500/10 ring-1 ring-blue-500/30 rounded-xl p-3 mb-4 text-xs text-parchment-400">
       পৃথিবীর ৫টি মহাসাগর নিচে দেওয়া আছে। প্রতিটির নিচে উল্লেখযোগ্য সাগর/তথ্য কাস্টমভাবে যোগ করতে পারবেন।
     </div>
     <div id="oceanList" class="space-y-4"></div>
@@ -537,7 +599,7 @@ function renderCustomFontChips(){
   const list = loadCustomFontsList();
   if(list.length===0){ container.innerHTML=''; return; }
   container.innerHTML = list.map(f=>
-    `<span class="inline-flex items-center gap-1 bg-white border border-fuchsia-300 rounded-full px-2 py-0.5 text-xs">
+    `<span class="inline-flex items-center gap-1 bg-ink-800/70 ring-1 ring-gold-500/30 text-parchment-200 rounded-full px-2 py-0.5 text-xs">
       🔤 ${f.name}
       <button onclick="removeCustomFontById('${f.id}')" class="text-red-500 font-bold">✕</button>
     </span>`
@@ -603,7 +665,7 @@ function toBnDigit(n){ return String(n).split('').map(c=>bnDigitMap[c]||c).join(
 const t1Body = document.getElementById('t1Body');
 for(let i=0;i<=100;i++){
   const tr = document.createElement('tr');
-  tr.className = i%2===0 ? 'bg-indigo-50' : 'bg-white';
+  tr.className = i%2===0 ? 'bg-indigo-500/10' : 'bg-ink-800/30';
   tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${i}</td><td class="p-2">${englishWord(i)}</td><td class="p-2">${bnWords[i]}</td><td class="p-2">${toBnDigit(i)}</td>`;
   tr.dataset.search = `${i} ${englishWord(i)} ${bnWords[i]} ${toBnDigit(i)}`.toLowerCase();
   t1Body.appendChild(tr);
@@ -635,7 +697,7 @@ function bnOrdinalDigit(n){
 const t2Body = document.getElementById('t2Body');
 for(let i=1;i<=31;i++){
   const tr = document.createElement('tr');
-  tr.className = i%2===0 ? 'bg-rose-50' : 'bg-white';
+  tr.className = i%2===0 ? 'bg-rose-500/10' : 'bg-ink-800/30';
   tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${enOrdinalSuffix(i)}</td><td class="p-2">${enOrdinalWords[i-1]}</td><td class="p-2">${bnOrdinalDigit(i)}</td><td class="p-2">${bnOrdinalWords[i-1]}</td>`;
   tr.dataset.search = `${i} ${enOrdinalSuffix(i)} ${enOrdinalWords[i-1]} ${bnOrdinalDigit(i)} ${bnOrdinalWords[i-1]}`.toLowerCase();
   t2Body.appendChild(tr);
@@ -654,11 +716,11 @@ const weekdays = [
 ];
 const t3Cards = document.getElementById('t3Cards');
 const t3Body = document.getElementById('t3Body');
-const weekColors = ['bg-amber-100','bg-amber-200','bg-amber-100','bg-amber-200','bg-amber-100','bg-amber-200','bg-amber-100'];
+const weekColors = ['bg-ink-800/60','bg-ink-800/40','bg-ink-800/60','bg-ink-800/40','bg-ink-800/60','bg-ink-800/40','bg-ink-800/60'];
 weekdays.forEach(([en,bn],idx)=>{
   const div = document.createElement('div');
-  div.className = `${weekColors[idx]} rounded-2xl shadow-lg premium-card border border-white/60 p-4 text-center`;
-  div.innerHTML = `<div class="text-2xl font-bold">${bn}</div><div class="text-slate-600">${en}</div>`;
+  div.className = `${weekColors[idx]} rounded-2xl shadow-card premium-card ring-1 ring-gold-500/20 p-4 text-center`;
+  div.innerHTML = `<div class="text-2xl font-bold">${bn}</div><div class="text-parchment-400">${en}</div>`;
   t3Cards.appendChild(div);
   const tr = document.createElement('tr');
   tr.innerHTML = `<td class="p-2">${en}</td><td class="p-2">${bn}</td>`;
@@ -682,7 +744,7 @@ function fillMonthTable(bodyId, arr){
   const tbody = document.getElementById(bodyId);
   arr.forEach((row,idx)=>{
     const tr=document.createElement('tr');
-    tr.className = idx%2===0?'bg-emerald-50':'bg-white';
+    tr.className = idx%2===0?'bg-emerald-500/10':'bg-ink-800/30';
     tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2 font-semibold">${row[2]}</td>`;
     tbody.appendChild(tr);
   });
@@ -702,7 +764,7 @@ function fillSeasonTable(bodyId,arr){
   const tbody = document.getElementById(bodyId);
   arr.forEach((row,idx)=>{
     const tr=document.createElement('tr');
-    tr.className = idx%2===0?'bg-teal-50':'bg-white';
+    tr.className = idx%2===0?'bg-teal-500/10':'bg-ink-800/30';
     tr.innerHTML = `<td class="p-2 font-semibold">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2">${row[2]}</td>`;
     tbody.appendChild(tr);
   });
@@ -723,7 +785,7 @@ function toRoman(num){
 const t6Body = document.getElementById('t6Body');
 for(let i=1;i<=100;i++){
   const tr=document.createElement('tr');
-  tr.className = i%2===0?'bg-purple-50':'bg-white';
+  tr.className = i%2===0?'bg-purple-500/10':'bg-ink-800/30';
   tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2 font-mono text-lg">${toRoman(i)}</td>`;
   tr.dataset.search = `${i} ${toRoman(i)}`.toLowerCase();
   t6Body.appendChild(tr);
@@ -747,7 +809,7 @@ document.querySelectorAll('.converter-block').forEach(block=>{
         <span>➡️</span>
         <select class="conv-to border rounded-lg px-2 py-2 flex-1">${keys.map((k,idx)=>`<option value="${k}" ${idx===1?'selected':''}>${k}</option>`).join('')}</select>
       </div>
-      <div class="conv-result text-lg font-bold text-sky-700 bg-sky-50 rounded-lg p-2">ফলাফল: -</div>
+      <div class="conv-result text-lg font-bold text-sky-300 bg-sky-50 rounded-lg p-2">ফলাফল: -</div>
     </div>`;
   function calc(){
     const val = parseFloat(block.querySelector('.conv-input').value)||0;
@@ -770,7 +832,7 @@ tempBlock.innerHTML = `
       <span>➡️</span>
       <select class="t-to border rounded-lg px-2 py-2 flex-1"><option value="F">°F (Fahrenheit)</option><option value="C">°C (Celsius)</option></select>
     </div>
-    <div class="t-result text-lg font-bold text-sky-700 bg-sky-50 rounded-lg p-2">ফলাফল: -</div>
+    <div class="t-result text-lg font-bold text-sky-300 bg-sky-50 rounded-lg p-2">ফলাফল: -</div>
   </div>`;
 function tempCalc(){
   const val = parseFloat(tempBlock.querySelector('.t-input').value)||0;
@@ -795,17 +857,17 @@ function renderCustom(){
   const list = loadCustom();
   const container = document.getElementById('customList');
   container.innerHTML='';
-  if(list.length===0){ container.innerHTML = `<p class="text-slate-400 col-span-full text-center py-8">এখনো কোনো তথ্য যোগ করা হয়নি।</p>`; return; }
+  if(list.length===0){ container.innerHTML = `<p class="text-parchment-400 col-span-full text-center py-8">এখনো কোনো তথ্য যোগ করা হয়নি।</p>`; return; }
   list.forEach((item,idx)=>{
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-4';
+    div.className = 'bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4';
     div.innerHTML = `
       <div class="flex justify-between items-start mb-2">
-        <span class="text-xs px-2 py-1 rounded-full bg-pink-100 text-pink-700 font-semibold">${item.category||''}</span>
+        <span class="text-xs px-2 py-1 rounded-full bg-pink-500/15 text-pink-300 font-semibold">${item.category||''}</span>
         <button class="no-print text-red-500 text-sm" onclick="deleteCustom(${idx})">🗑️</button>
       </div>
       <h4 class="font-bold text-lg mb-1">${item.title||''}</h4>
-      <p class="text-sm text-slate-600 whitespace-pre-wrap mb-2">${item.text||''}</p>
+      <p class="text-sm text-parchment-400 whitespace-pre-wrap mb-2">${item.text||''}</p>
       ${item.image ? `<img src="${item.image}" class="rounded-lg max-h-40 object-cover w-full">` : ''}
     `;
     container.appendChild(div);
@@ -894,7 +956,7 @@ function importGeneric(evt, tableId){
     aoa.forEach(row=>{
       if(!row || row.length===0) return;
       const tr = document.createElement('tr');
-      tr.className='bg-yellow-50';
+      tr.className='bg-gold-500/20';
       for(let i=0;i<colCount;i++){
         const td = document.createElement('td');
         td.className='p-2';
@@ -996,7 +1058,7 @@ function renderBdCascade(){
 
   function buildLevel(label, colorClass, items, onAdd, onSelect, selectedRenderer){
     const wrap = document.createElement('div');
-    wrap.className = 'bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-3';
+    wrap.className = 'bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-3';
     wrap.innerHTML = `<div class="font-semibold ${colorClass} mb-2">${label}</div>
       <div class="flex flex-wrap gap-2 mb-2 level-chips"></div>
       <div class="flex gap-2">
@@ -1027,7 +1089,7 @@ function renderBdCascade(){
 
   const upazilas = Object.keys(tree[district]);
   let selectedUpazila = { current: upazilas[0] || null };
-  buildLevel('উপজেলা', 'text-lime-700', upazilas, {
+  buildLevel('উপজেলা', 'text-lime-300', upazilas, {
     add:(val)=>{ tree[district][val] = tree[district][val] || {}; saveBdTree(tree); renderBdCascade(); },
     remove:(val)=>{ delete tree[district][val]; saveBdTree(tree); renderBdCascade(); }
   }, { current: window.__selectedUpazila, set:(val)=>{ window.__selectedUpazila = val; window.__selectedUnion=null; renderBdCascade(); } });
@@ -1035,7 +1097,7 @@ function renderBdCascade(){
   const currentUpazila = window.__selectedUpazila && tree[district][window.__selectedUpazila] ? window.__selectedUpazila : null;
   if(currentUpazila){
     const unions = Object.keys(tree[district][currentUpazila]);
-    buildLevel('ইউনিয়ন', 'text-emerald-700', unions, {
+    buildLevel('ইউনিয়ন', 'text-emerald-300', unions, {
       add:(val)=>{ tree[district][currentUpazila][val] = tree[district][currentUpazila][val] || []; saveBdTree(tree); renderBdCascade(); },
       remove:(val)=>{ delete tree[district][currentUpazila][val]; saveBdTree(tree); renderBdCascade(); }
     }, { current: window.__selectedUnion, set:(val)=>{ window.__selectedUnion = val; renderBdCascade(); } });
@@ -1043,7 +1105,7 @@ function renderBdCascade(){
     const currentUnion = window.__selectedUnion && tree[district][currentUpazila][window.__selectedUnion] ? window.__selectedUnion : null;
     if(currentUnion){
       const villages = tree[district][currentUpazila][currentUnion];
-      buildLevel('গ্রাম', 'text-teal-700', villages, {
+      buildLevel('গ্রাম', 'text-teal-300', villages, {
         add:(val)=>{ villages.push(val); saveBdTree(tree); renderBdCascade(); },
         remove:(val)=>{ tree[district][currentUpazila][currentUnion] = villages.filter(v=>v!==val); saveBdTree(tree); renderBdCascade(); }
       }, { current:null, set:()=>{} });
@@ -1084,7 +1146,7 @@ function renderContinentCountries(){
   all.forEach((country, idx)=>{
     const isCustom = idx >= continentData[c].length;
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all border border-slate-100 px-3 py-2 text-sm flex justify-between items-center';
+    div.className = 'bg-ink-800/60 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all ring-1 ring-white/5 px-3 py-2 text-sm flex justify-between items-center';
     div.innerHTML = `<span>${country}</span>${isCustom?`<button class="text-red-400 text-xs" onclick="removeCustomContinentItem('${c}', ${idx-continentData[c].length})">✕</button>`:''}`;
     container.appendChild(div);
   });
@@ -1125,8 +1187,8 @@ function renderOceans(){
   oceanData.forEach(ocean=>{
     const items = custom[ocean] || [];
     const div = document.createElement('div');
-    div.className = 'bg-white rounded-2xl shadow-lg premium-card border border-slate-100 p-3';
-    div.innerHTML = `<div class="font-semibold text-blue-700 mb-2">🌊 ${ocean}</div>
+    div.className = 'bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-3';
+    div.innerHTML = `<div class="font-semibold text-blue-300 mb-2">🌊 ${ocean}</div>
       <div class="flex flex-wrap gap-1.5 mb-2 ocean-chips"></div>
       <div class="flex gap-2">
         <input type="text" placeholder="উল্লেখযোগ্য সাগর/তথ্য যোগ করুন" class="border rounded-lg px-2 py-1.5 text-sm flex-1 ocean-input">
