@@ -105,3 +105,22 @@
     #printArea{ position:absolute; left:0; top:0; width:100%; }
     .no-print{ display:none !important; }
   }
+
+/* ===== GLOBAL SEARCH ===== */
+@keyframes searchPulse{
+  0%{ box-shadow: 0 0 0 0 rgba(212,168,87,.9); background-color: rgba(212,168,87,.35); }
+  60%{ box-shadow: 0 0 0 10px rgba(212,168,87,0); background-color: rgba(212,168,87,.18); }
+  100%{ box-shadow: 0 0 0 0 rgba(212,168,87,0); background-color: transparent; }
+}
+.search-highlight{ animation: searchPulse 1.7s ease-out; border-radius: 8px; }
+
+#globalSearchOverlay{
+  background: rgba(10,13,24,0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#globalSearchResults::-webkit-scrollbar{ width:8px; }
+#globalSearchResults::-webkit-scrollbar-thumb{ background: rgba(212,168,87,.35); border-radius:8px; }
+
+.gs-result-item{ transition: background-color .12s ease, transform .12s ease; cursor:pointer; }
+.gs-result-item:hover, .gs-result-item.gs-active{ background-color: rgba(212,168,87,.12); transform: translateX(2px); }
