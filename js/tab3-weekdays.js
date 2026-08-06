@@ -13,6 +13,7 @@ const t3Body = document.getElementById('t3Body');
 const weekColors = ['bg-ink-800/60','bg-ink-800/40','bg-ink-800/60','bg-ink-800/40','bg-ink-800/60','bg-ink-800/40','bg-ink-800/60'];
 weekdays.forEach(([en,bn],idx)=>{
   const div = document.createElement('div');
+  div.id = `t3-card-${idx}`;
   div.className = `${weekColors[idx]} rounded-2xl shadow-card premium-card ring-1 ring-gold-500/20 p-4 text-center`;
   div.innerHTML = `<div class="text-2xl font-bold">${bn}</div><div class="text-parchment-400">${en}</div>`;
   t3Cards.appendChild(div);

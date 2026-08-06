@@ -18,6 +18,7 @@ function fillMonthTable(bodyId, arr){
   const tbody = document.getElementById(bodyId);
   arr.forEach((row,idx)=>{
     const tr=document.createElement('tr');
+    tr.id = `${bodyId}-row-${idx}`;
     tr.className = idx%2===0?'bg-emerald-500/10':'bg-ink-800/30';
     tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2 font-semibold">${row[2]}</td>`;
     tbody.appendChild(tr);

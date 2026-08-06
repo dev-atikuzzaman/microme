@@ -14,6 +14,7 @@ function renderCustom(){
   if(list.length===0){ container.innerHTML = `<p class="text-parchment-400 col-span-full text-center py-8">এখনো কোনো তথ্য যোগ করা হয়নি।</p>`; return; }
   list.forEach((item,idx)=>{
     const div = document.createElement('div');
+    div.id = `t8-card-${idx}`;
     div.className = 'bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4';
     div.innerHTML = `
       <div class="flex justify-between items-start mb-2">

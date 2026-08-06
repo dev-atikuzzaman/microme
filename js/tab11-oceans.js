@@ -13,9 +13,10 @@ function renderOceans(){
   const container = document.getElementById('oceanList');
   container.innerHTML = '';
   const custom = loadOceanCustom();
-  oceanData.forEach(ocean=>{
+  oceanData.forEach((ocean, oIdx)=>{
     const items = custom[ocean] || [];
     const div = document.createElement('div');
+    div.id = `t11-ocean-${oIdx}`;
     div.className = 'bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-3';
     div.innerHTML = `<div class="font-semibold text-blue-300 mb-2">🌊 ${ocean}</div>
       <div class="flex flex-wrap gap-1.5 mb-2 ocean-chips"></div>

@@ -102,3 +102,15 @@ function renderBdCascade(){
 }
 bdDivisionSel.value = Object.keys(bdData)[0];
 populateBdDistricts();
+
+/* Used by global search to jump straight to a district / upazila / union / village */
+function gsGoToBangladesh(division, district, upazila, union){
+  bdDivisionSel.value = division;
+  populateBdDistricts();
+  bdDistrictSel.value = district;
+  window.__selectedUpazila = upazila || null;
+  window.__selectedUnion = union || null;
+  renderBdCascade();
+  goToTab('t9');
+  setTimeout(()=> flashHighlight(document.getElementById('bdCascade')), 120);
+}

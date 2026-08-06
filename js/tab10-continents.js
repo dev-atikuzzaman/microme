@@ -31,10 +31,18 @@ function renderContinentCountries(){
   all.forEach((country, idx)=>{
     const isCustom = idx >= continentData[c].length;
     const div = document.createElement('div');
+    div.id = `t10-country-${idx}`;
     div.className = 'bg-ink-800/60 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all ring-1 ring-white/5 px-3 py-2 text-sm flex justify-between items-center';
     div.innerHTML = `<span>${country}</span>${isCustom?`<button class="text-red-400 text-xs" onclick="removeCustomContinentItem('${c}', ${idx-continentData[c].length})">✕</button>`:''}`;
     container.appendChild(div);
   });
+}
+/* Used by global search to jump straight to a country's continent + row */
+function gsGoToContinent(continentName, countryIndex){
+  continentSelect.value = continentName;
+  renderContinentCountries();
+  goToTab('t10');
+  setTimeout(()=> flashHighlight(document.getElementById(`t10-country-${countryIndex}`)), 120);
 }
 continentSelect.addEventListener('change', renderContinentCountries);
 function addCustomContinentItem(){

@@ -13,6 +13,7 @@ function toRoman(num){
 const t6Body = document.getElementById('t6Body');
 for(let i=1;i<=100;i++){
   const tr=document.createElement('tr');
+  tr.id = `t6-row-${i}`;
   tr.className = i%2===0?'bg-purple-500/10':'bg-ink-800/30';
   tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2 font-mono text-lg">${toRoman(i)}</td>`;
   tr.dataset.search = `${i} ${toRoman(i)}`.toLowerCase();
