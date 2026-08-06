@@ -1,9 +1,16 @@
-const CACHE_NAME = 'tottokosh-cache-v2';
+const CACHE_NAME = 'tottokosh-cache-v3';
 const ASSETS = [
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './icons/icon-maskable-192.png',
+  './icons/icon-maskable-512.png',
+  './icons/apple-touch-icon.png',
+  './icons/favicon.ico',
+  './icons/favicon-16.png',
+  './icons/favicon-32.png',
+  './icons/favicon-48.png',
   './css/style.css',
   './js/tailwind-config.js',
   './js/fonts.js',
