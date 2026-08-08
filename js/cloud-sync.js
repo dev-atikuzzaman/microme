@@ -19,7 +19,9 @@ const SYNC_KEYS = {
   'customInfoEntries_v1': { rerender: renderCustom },
   'bdCustomGeoTree': { rerender: renderBdCascade },
   'continentCustomData': { rerender: renderContinentCountries },
-  'oceanCustomData': { rerender: renderOceans }
+  'oceanCustomData': { rerender: renderOceans },
+  'favoriteItems': { rerender: renderFavoritesPanel },
+  'recentItems': { rerender: renderFavoritesPanel }
 };
 
 function setSyncStatus(online){

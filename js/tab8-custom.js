@@ -36,7 +36,8 @@ function addCustomEntry(){
   const file = fileInput.files[0];
   function pushEntry(imageData){
     const list = loadCustom();
-    list.push({title,category,text,image:imageData||''});
+    const id = 'ci_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+    list.push({id,title,category,text,image:imageData||''});
     saveCustom(list);
     renderCustom();
     document.getElementById('c_title').value='';

@@ -8,7 +8,7 @@ function buildGlobalSearchIndex(){
   // ---- Tab 1: Numbers 0-100 ----
   for(let i=0;i<=100;i++){
     idx.push({
-      tabId:'t1', tabLabel:'সংখ্যা', tabIcon:'🔢',
+      id:`t1-${i}`, tabId:'t1', tabLabel:'সংখ্যা', tabIcon:'🔢',
       title: `${i} = ${bnWords[i]}`,
       subtitle: `${englishWord(i)} • ${toBnDigit(i)}`,
       keywords: `${i} ${englishWord(i)} ${bnWords[i]} ${toBnDigit(i)}`.toLowerCase(),
@@ -19,7 +19,7 @@ function buildGlobalSearchIndex(){
   // ---- Tab 2: Ordinals 1-31 ----
   for(let i=1;i<=31;i++){
     idx.push({
-      tabId:'t2', tabLabel:'ক্রম', tabIcon:'🔠',
+      id:`t2-${i}`, tabId:'t2', tabLabel:'ক্রম', tabIcon:'🔠',
       title: `${bnOrdinalDigit(i)} = ${bnOrdinalWords[i-1]}`,
       subtitle: `${enOrdinalSuffix(i)} • ${enOrdinalWords[i-1]}`,
       keywords: `${i} ${enOrdinalSuffix(i)} ${enOrdinalWords[i-1]} ${bnOrdinalDigit(i)} ${bnOrdinalWords[i-1]}`.toLowerCase(),
@@ -30,7 +30,7 @@ function buildGlobalSearchIndex(){
   // ---- Tab 3: Weekdays ----
   weekdays.forEach(([en,bn], wIdx)=>{
     idx.push({
-      tabId:'t3', tabLabel:'সপ্তাহ', tabIcon:'📅',
+      id:`t3-${wIdx}`, tabId:'t3', tabLabel:'সপ্তাহ', tabIcon:'📅',
       title: bn, subtitle: en,
       keywords: `${en} ${bn}`.toLowerCase(),
       go: ()=>{ goToTab('t3'); setTimeout(()=>flashHighlight(document.getElementById(`t3-card-${wIdx}`)),120); }
@@ -42,7 +42,7 @@ function buildGlobalSearchIndex(){
     .forEach(([bodyId, arr, label])=>{
       arr.forEach((row, i2)=>{
         idx.push({
-          tabId:'t4', tabLabel:'মাস', tabIcon:'🗓️',
+          id:`t4-${bodyId}-${i2}`, tabId:'t4', tabLabel:'মাস', tabIcon:'🗓️',
           title: row[0], subtitle: `${label} • ${row[1]}`,
           keywords: `${row[0]} ${row[1]} ${label}`.toLowerCase(),
           go: ()=>{ goToTab('t4'); setTimeout(()=>flashHighlight(document.getElementById(`${bodyId}-row-${i2}`)),120); }
@@ -55,7 +55,7 @@ function buildGlobalSearchIndex(){
     .forEach(([bodyId, arr, label])=>{
       arr.forEach((row, i2)=>{
         idx.push({
-          tabId:'t5', tabLabel:'ঋতু', tabIcon:'🍂',
+          id:`t5-${bodyId}-${i2}`, tabId:'t5', tabLabel:'ঋতু', tabIcon:'🍂',
           title: row[0], subtitle: `${label} • ${row[1]}`,
           keywords: `${row[0]} ${row[1]} ${row[2]} ${label}`.toLowerCase(),
           go: ()=>{ goToTab('t5'); setTimeout(()=>flashHighlight(document.getElementById(`${bodyId}-row-${i2}`)),120); }
@@ -66,7 +66,7 @@ function buildGlobalSearchIndex(){
   // ---- Tab 6: Roman numerals ----
   for(let i=1;i<=100;i++){
     idx.push({
-      tabId:'t6', tabLabel:'রোমান', tabIcon:'🏛️',
+      id:`t6-${i}`, tabId:'t6', tabLabel:'রোমান', tabIcon:'🏛️',
       title: `${i} = ${toRoman(i)}`, subtitle: 'রোমান সংখ্যা',
       keywords: `${i} ${toRoman(i)}`.toLowerCase(),
       go: ()=>{ goToTab('t6'); setTimeout(()=>flashHighlight(document.getElementById(`t6-row-${i}`)),120); }
@@ -76,7 +76,7 @@ function buildGlobalSearchIndex(){
   // ---- Tab 8: Custom info (dynamic, reloaded fresh each search) ----
   loadCustom().forEach((item, i2)=>{
     idx.push({
-      tabId:'t8', tabLabel:'কাস্টম তথ্য', tabIcon:'📝',
+      id:`t8-${item.id || i2}`, tabId:'t8', tabLabel:'কাস্টম তথ্য', tabIcon:'📝',
       title: item.title || '(শিরোনামহীন)', subtitle: item.category || '',
       keywords: `${item.title||''} ${item.text||''} ${item.category||''}`.toLowerCase(),
       go: ()=>{ goToTab('t8'); setTimeout(()=>flashHighlight(document.getElementById(`t8-card-${i2}`)),120); }
@@ -87,7 +87,7 @@ function buildGlobalSearchIndex(){
   Object.entries(bdData).forEach(([division, districts])=>{
     districts.forEach(district=>{
       idx.push({
-        tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
+        id:`t9-district-${district}`, tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
         title: district, subtitle: `জেলা • ${division} বিভাগ`,
         keywords: `${district} ${division} জেলা district`.toLowerCase(),
         go: ()=> gsGoToBangladesh(division, district, null, null)
@@ -100,21 +100,21 @@ function buildGlobalSearchIndex(){
     if(!division) return;
     Object.entries(upazilas).forEach(([upazila, unions])=>{
       idx.push({
-        tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
+        id:`t9-upazila-${district}-${upazila}`, tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
         title: upazila, subtitle: `উপজেলা • ${district} জেলা`,
         keywords: `${upazila} ${district} উপজেলা upazila`.toLowerCase(),
         go: ()=> gsGoToBangladesh(division, district, upazila, null)
       });
       Object.entries(unions).forEach(([union, villages])=>{
         idx.push({
-          tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
+          id:`t9-union-${district}-${upazila}-${union}`, tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
           title: union, subtitle: `ইউনিয়ন • ${upazila}, ${district}`,
           keywords: `${union} ${upazila} ${district} ইউনিয়ন union`.toLowerCase(),
           go: ()=> gsGoToBangladesh(division, district, upazila, union)
         });
         (villages||[]).forEach(village=>{
           idx.push({
-            tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
+            id:`t9-village-${district}-${upazila}-${union}-${village}`, tabId:'t9', tabLabel:'বাংলাদেশ', tabIcon:'🗺️',
             title: village, subtitle: `গ্রাম • ${union}, ${upazila}`,
             keywords: `${village} ${union} ${upazila} ${district} গ্রাম village`.toLowerCase(),
             go: ()=> gsGoToBangladesh(division, district, upazila, union)
@@ -129,7 +129,7 @@ function buildGlobalSearchIndex(){
   Object.entries(continentData).forEach(([continent, countries])=>{
     countries.forEach((country, i2)=>{
       idx.push({
-        tabId:'t10', tabLabel:'মহাদেশ', tabIcon:'🌍',
+        id:`t10-${continent}-${country}`, tabId:'t10', tabLabel:'মহাদেশ', tabIcon:'🌍',
         title: country, subtitle: continent,
         keywords: `${country} ${continent}`.toLowerCase(),
         go: ()=> gsGoToContinent(continent, i2)
@@ -138,7 +138,7 @@ function buildGlobalSearchIndex(){
     (continentCustom[continent]||[]).forEach((country, ci)=>{
       const fullIdx = countries.length + ci;
       idx.push({
-        tabId:'t10', tabLabel:'মহাদেশ', tabIcon:'🌍',
+        id:`t10-${continent}-${country}`, tabId:'t10', tabLabel:'মহাদেশ', tabIcon:'🌍',
         title: country, subtitle: `${continent} (কাস্টম)`,
         keywords: `${country} ${continent}`.toLowerCase(),
         go: ()=> gsGoToContinent(continent, fullIdx)
@@ -150,14 +150,14 @@ function buildGlobalSearchIndex(){
   const oceanCustom = loadOceanCustom();
   oceanData.forEach((ocean, oIdx)=>{
     idx.push({
-      tabId:'t11', tabLabel:'মহাসাগর', tabIcon:'🌊',
+      id:`t11-${oIdx}`, tabId:'t11', tabLabel:'মহাসাগর', tabIcon:'🌊',
       title: ocean, subtitle: 'মহাসাগর',
       keywords: ocean.toLowerCase(),
       go: ()=>{ goToTab('t11'); setTimeout(()=>flashHighlight(document.getElementById(`t11-ocean-${oIdx}`)),120); }
     });
     (oceanCustom[ocean]||[]).forEach(item=>{
       idx.push({
-        tabId:'t11', tabLabel:'মহাসাগর', tabIcon:'🌊',
+        id:`t11-${oIdx}-${item}`, tabId:'t11', tabLabel:'মহাসাগর', tabIcon:'🌊',
         title: item, subtitle: `${ocean} (কাস্টম তথ্য)`,
         keywords: `${item} ${ocean}`.toLowerCase(),
         go: ()=>{ goToTab('t11'); setTimeout(()=>flashHighlight(document.getElementById(`t11-ocean-${oIdx}`)),120); }
@@ -192,24 +192,39 @@ function gsRenderResults(results, query){
     gsResultsBox.classList.remove('hidden');
     return;
   }
-  gsResultsBox.innerHTML = results.map((r, i) => `
+  gsResultsBox.innerHTML = results.map((r, i) => {
+    const starred = isFavorite(r.id);
+    return `
     <div class="gs-result-item flex items-center gap-3 px-3 py-2.5 border-b border-white/5 last:border-0" data-gs-idx="${i}">
       <span class="text-lg shrink-0">${r.tabIcon}</span>
       <div class="min-w-0 flex-1">
         <div class="text-parchment-100 text-sm font-medium truncate">${r.title}</div>
         <div class="text-parchment-400 text-xs truncate">${r.subtitle}</div>
       </div>
+      <button class="gs-star text-base shrink-0 ${starred ? 'text-gold-400' : 'text-parchment-400'}" data-gs-idx="${i}">${starred ? '★' : '☆'}</button>
       <span class="text-[10px] text-gold-400 bg-gold-500/10 ring-1 ring-gold-500/20 rounded-full px-2 py-0.5 shrink-0">${r.tabLabel}</span>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
   gsResultsBox.classList.remove('hidden');
 
   [...gsResultsBox.querySelectorAll('.gs-result-item')].forEach(el=>{
-    el.addEventListener('click', ()=>{
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('.gs-star')) return;
       const item = gsCurrentResults[Number(el.dataset.gsIdx)];
       gsCloseResults();
       gsInput.blur();
+      addToRecent(item);
       item.go();
+    });
+  });
+  [...gsResultsBox.querySelectorAll('.gs-star')].forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const item = gsCurrentResults[Number(el.dataset.gsIdx)];
+      const nowStarred = toggleFavorite(item);
+      el.textContent = nowStarred ? '★' : '☆';
+      el.classList.toggle('text-gold-400', nowStarred);
+      el.classList.toggle('text-parchment-400', !nowStarred);
     });
   });
 }
@@ -251,7 +266,7 @@ gsInput.addEventListener('keydown', (e)=>{
   } else if(e.key === 'Enter'){
     e.preventDefault();
     const item = gsCurrentResults[gsActiveIndex >= 0 ? gsActiveIndex : 0];
-    if(item){ gsCloseResults(); gsInput.blur(); item.go(); }
+    if(item){ gsCloseResults(); gsInput.blur(); addToRecent(item); item.go(); }
   } else if(e.key === 'Escape'){
     gsCloseResults();
     gsInput.blur();
