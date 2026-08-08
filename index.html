@@ -44,6 +44,7 @@
         <label class="flex items-center gap-1 text-parchment-300">রং:
           <input id="fontColorPicker" type="color" value="#F3EEDD" class="w-8 h-8 border rounded-lg cursor-pointer">
         </label>
+        <button id="favoritesBtn" title="ফেভারিট ও সাম্প্রতিক দেখা তথ্য" class="px-2 py-1.5 rounded-xl bg-ink-800/60 ring-1 ring-gold-500/30 text-gold-300 btn-glow text-sm font-semibold">⭐</button>
         <button id="printBtn" class="px-3 py-1.5 rounded-xl bg-gradient-to-br from-ink-700 to-ink-900 text-parchment-100 ring-1 ring-white/10 btn-glow">🖨️ প্রিন্ট</button>
       </div>
     </div>
@@ -56,6 +57,20 @@
         class="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm">
       <button id="globalSearchClear" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-parchment-400 hover:text-gold-300 text-sm">✕</button>
       <div id="globalSearchResults" class="hidden absolute z-50 mt-1.5 w-full max-h-[65vh] overflow-y-auto bg-ink-950 ring-1 ring-gold-500/25 rounded-xl shadow-card"></div>
+    </div>
+  </div>
+
+  <!-- Favorites / Recently Viewed Panel -->
+  <div id="favoritesPanel" class="hidden border-t border-white/5 glass">
+    <div class="max-w-7xl mx-auto px-3 py-3">
+      <div class="flex items-center gap-2 mb-2">
+        <button id="favoritesTabFav" class="fh-tab-btn fh-tab-active px-3 py-1.5 rounded-lg text-xs font-semibold bg-ink-800/60 ring-1 ring-white/5 text-parchment-200">⭐ ফেভারিট (<span id="favCount">0</span>)</button>
+        <button id="favoritesTabRecent" class="fh-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-ink-800/60 ring-1 ring-white/5 text-parchment-200">🕘 সাম্প্রতিক (<span id="recentCount">0</span>)</button>
+        <button id="clearRecentBtn" class="text-xs text-parchment-400 hover:text-red-400 ml-auto">সাম্প্রতিক মুছুন</button>
+        <button id="favoritesCloseBtn" class="text-xs text-parchment-400 hover:text-gold-300">✕ বন্ধ</button>
+      </div>
+      <div id="favoritesList" class="max-h-[50vh] overflow-y-auto rounded-xl ring-1 ring-white/5 bg-ink-900/60"></div>
+      <div id="recentList" class="hidden max-h-[50vh] overflow-y-auto rounded-xl ring-1 ring-white/5 bg-ink-900/60"></div>
     </div>
   </div>
 
@@ -348,6 +363,7 @@
 <script src="js/tab10-continents.js"></script>
 <script src="js/tab11-oceans.js"></script>
 <script src="js/global-search.js"></script>
+<script src="js/favorites-history.js"></script>
 <script src="js/cloud-sync.js"></script>
 <script src="js/main.js"></script>
 </body>
