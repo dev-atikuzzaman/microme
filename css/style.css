@@ -124,3 +124,12 @@
 
 .gs-result-item{ transition: background-color .12s ease, transform .12s ease; cursor:pointer; }
 .gs-result-item:hover, .gs-result-item.gs-active{ background-color: rgba(212,168,87,.12); transform: translateX(2px); }
+
+/* ===== FAVORITES / RECENT PANEL ===== */
+.fh-tab-active{
+  background-color: rgba(212,168,87,.15) !important;
+  box-shadow: 0 0 0 1px rgba(212,168,87,.5) inset;
+  color: #E8C77E !important;
+}
+#favoritesList::-webkit-scrollbar, #recentList::-webkit-scrollbar{ width:8px; }
+#favoritesList::-webkit-scrollbar-thumb, #recentList::-webkit-scrollbar-thumb{ background: rgba(212,168,87,.35); border-radius:8px; }
