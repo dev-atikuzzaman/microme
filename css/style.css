@@ -133,3 +133,15 @@
 }
 #favoritesList::-webkit-scrollbar, #recentList::-webkit-scrollbar{ width:8px; }
 #favoritesList::-webkit-scrollbar-thumb, #recentList::-webkit-scrollbar-thumb{ background: rgba(212,168,87,.35); border-radius:8px; }
+
+/* ===== TEXT-TO-SPEECH BUTTON ===== */
+.tts-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border-radius:9999px;
+  background: rgba(212,168,87,.12);
+  color:#E8C77E; font-size:14px; line-height:1;
+  transition: background-color .15s ease, transform .15s ease;
+  cursor:pointer;
+}
+.tts-btn:hover{ background: rgba(212,168,87,.28); transform: scale(1.08); }
+.tts-btn:active{ transform: scale(0.95); }
