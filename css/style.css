@@ -145,3 +145,10 @@
 }
 .tts-btn:hover{ background: rgba(212,168,87,.28); transform: scale(1.08); }
 .tts-btn:active{ transform: scale(0.95); }
+
+/* ===== VOICE TYPING (mic listening state) ===== */
+@keyframes micPulse{
+  0%,100%{ opacity:1; transform: scale(1); }
+  50%{ opacity:.45; transform: scale(1.15); }
+}
+.tts-listening{ color:#f87171 !important; animation: micPulse 1s ease-in-out infinite; }
