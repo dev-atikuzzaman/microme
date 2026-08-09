@@ -165,6 +165,14 @@ function buildGlobalSearchIndex(){
     });
   });
 
+  // ---- Tab 12: Today's Date dashboard ----
+  idx.push({
+    id:'t12-today', tabId:'t12', tabLabel:'আজকের তারিখ', tabIcon:'📆',
+    title: 'আজকের তারিখ (বাংলা, ইংরেজি, হিজরি)', subtitle: 'লাইভ ঘড়ি ও তিন ক্যালেন্ডার',
+    keywords: 'আজকের তারিখ today date bengali english hijri calendar ক্যালেন্ডার'.toLowerCase(),
+    go: ()=> goToTab('t12')
+  });
+
   return idx;
 }
 
