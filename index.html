@@ -38,6 +38,13 @@
           <select id="fontFamilySelect" class="border rounded-lg px-2 py-1 max-w-[140px]"></select>
         </label>
         <button id="fontManagerBtn" title="নতুন কাস্টম ফন্ট আপলোড করুন" class="px-2 py-1.5 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 btn-glow text-xs font-semibold">🔤+</button>
+        <label class="flex items-center gap-1 text-parchment-300">🔊:
+          <select id="ttsModeSelect" title="উচ্চারণের ভাষা মোড" class="border rounded-lg px-2 py-1 text-xs max-w-[110px]">
+            <option value="both">উভয় ভাষা</option>
+            <option value="bn">শুধু বাংলা</option>
+            <option value="en">শুধু English</option>
+          </select>
+        </label>
         <label class="flex items-center gap-1 text-parchment-300">সাইজ:
           <input id="fontSizeRange" type="range" min="12" max="32" value="16" class="align-middle">
         </label>
@@ -54,7 +61,8 @@
       <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gold-400 pointer-events-none">🔍</span>
       <input id="globalSearchInput" type="text" autocomplete="off"
         placeholder="সব ট্যাবে একসাথে খুঁজুন... (যেমন: ৪২, January, ঢাকা, Pacific)"
-        class="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm">
+        class="w-full pl-9 pr-16 py-2.5 rounded-xl text-sm">
+      <button id="voiceSearchBtn" title="ভয়েস দিয়ে সার্চ করুন" class="absolute right-9 top-1/2 -translate-y-1/2 text-parchment-400 hover:text-gold-300 text-base">🎤</button>
       <button id="globalSearchClear" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-parchment-400 hover:text-gold-300 text-sm">✕</button>
       <div id="globalSearchResults" class="hidden absolute z-50 mt-1.5 w-full max-h-[65vh] overflow-y-auto bg-ink-950 ring-1 ring-gold-500/25 rounded-xl shadow-card"></div>
     </div>
@@ -109,6 +117,14 @@
 
   <!-- ================= TAB 1: NUMBERS 0-100 ================= -->
   <section id="t1" class="tab-panel">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-3 bg-ink-800/40 ring-1 ring-white/5 rounded-xl p-2.5">
+      <span class="text-xs text-parchment-300 shrink-0">🔊 রেঞ্জ শুনুন:</span>
+      <input id="t1RangeFrom" type="number" min="0" max="100" value="0" class="w-16 px-2 py-1 rounded-lg text-sm">
+      <span class="text-parchment-400 text-xs">থেকে</span>
+      <input id="t1RangeTo" type="number" min="0" max="100" value="20" class="w-16 px-2 py-1 rounded-lg text-sm">
+      <button id="t1RangePlay" class="px-3 py-1.5 bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 rounded-lg text-xs font-semibold btn-glow">▶️ পড়ুন</button>
+      <button id="t1RangeStop" class="px-3 py-1.5 bg-ink-800 text-parchment-200 ring-1 ring-white/10 rounded-lg text-xs btn-glow">⏹ থামান</button>
+    </div>
     <div class="no-print flex flex-wrap items-center gap-2 mb-4">
       <input id="t1Search" type="text" placeholder="🔍 যেকোনো ভাবে সার্চ করুন (0, Zero, শূন্য, ০ ...)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
       <button onclick="exportTableCSV('t1Table','numbers')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
@@ -136,6 +152,14 @@
 
   <!-- ================= TAB 2: ORDINALS 1-31 ================= -->
   <section id="t2" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-3 bg-ink-800/40 ring-1 ring-white/5 rounded-xl p-2.5">
+      <span class="text-xs text-parchment-300 shrink-0">🔊 রেঞ্জ শুনুন:</span>
+      <input id="t2RangeFrom" type="number" min="1" max="31" value="1" class="w-16 px-2 py-1 rounded-lg text-sm">
+      <span class="text-parchment-400 text-xs">থেকে</span>
+      <input id="t2RangeTo" type="number" min="1" max="31" value="10" class="w-16 px-2 py-1 rounded-lg text-sm">
+      <button id="t2RangePlay" class="px-3 py-1.5 bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 rounded-lg text-xs font-semibold btn-glow">▶️ পড়ুন</button>
+      <button id="t2RangeStop" class="px-3 py-1.5 bg-ink-800 text-parchment-200 ring-1 ring-white/10 rounded-lg text-xs btn-glow">⏹ থামান</button>
+    </div>
     <div class="no-print flex flex-wrap items-center gap-2 mb-4">
       <input id="t2Search" type="text" placeholder="🔍 সার্চ করুন (1, First, প্রথম, ১ম ...)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
       <button onclick="exportTableCSV('t2Table','ordinals')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
@@ -239,6 +263,14 @@
 
   <!-- ================= TAB 6: ROMAN NUMERALS ================= -->
   <section id="t6" class="tab-panel hidden">
+    <div class="no-print flex flex-wrap items-center gap-2 mb-3 bg-ink-800/40 ring-1 ring-white/5 rounded-xl p-2.5">
+      <span class="text-xs text-parchment-300 shrink-0">🔊 রেঞ্জ শুনুন:</span>
+      <input id="t6RangeFrom" type="number" min="1" max="100" value="1" class="w-16 px-2 py-1 rounded-lg text-sm">
+      <span class="text-parchment-400 text-xs">থেকে</span>
+      <input id="t6RangeTo" type="number" min="1" max="100" value="20" class="w-16 px-2 py-1 rounded-lg text-sm">
+      <button id="t6RangePlay" class="px-3 py-1.5 bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 rounded-lg text-xs font-semibold btn-glow">▶️ পড়ুন</button>
+      <button id="t6RangeStop" class="px-3 py-1.5 bg-ink-800 text-parchment-200 ring-1 ring-white/10 rounded-lg text-xs btn-glow">⏹ থামান</button>
+    </div>
     <div class="no-print flex flex-wrap items-center gap-2 mb-3">
       <input id="t6Search" type="text" placeholder="🔍 সার্চ করুন (সংখ্যা বা রোমান)" class="flex-1 min-w-[220px] border rounded-lg px-3 py-2">
       <button onclick="exportTableCSV('t6Table','roman')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-sm btn-glow">CSV Export</button>
@@ -366,6 +398,7 @@
 <script src="js/tab10-continents.js"></script>
 <script src="js/tab11-oceans.js"></script>
 <script src="js/global-search.js"></script>
+<script src="js/voice-input.js"></script>
 <script src="js/favorites-history.js"></script>
 <script src="js/cloud-sync.js"></script>
 <script src="js/main.js"></script>
