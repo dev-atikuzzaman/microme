@@ -109,6 +109,7 @@
       <button data-tab="t9" class="tab-btn flex-1 min-w-[170px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🗺️</span><span class="text-xs sm:text-sm">বাংলাদেশ (জেলা-উপজেলা)</span></button>
       <button data-tab="t10" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🌍</span><span class="text-xs sm:text-sm">মহাদেশ ও দেশ</span></button>
       <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🌊</span><span class="text-xs sm:text-sm">মহাসাগর</span></button>
+      <button data-tab="t12" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>📆</span><span class="text-xs sm:text-sm">আজকের তারিখ</span></button>
     </div>
   </nav>
   <p id="swipeHint" class="no-print text-center text-[10px] text-parchment-400/70 pb-1.5 sm:hidden">👈 বাম-ডানে সোয়াইপ করে ট্যাব বদলান 👉</p>
@@ -381,6 +382,41 @@
     <div id="oceanList" class="space-y-4"></div>
   </section>
 
+  <!-- ================= TAB 12: TODAY'S DATE DASHBOARD ================= -->
+  <section id="t12" class="tab-panel hidden">
+    <div class="bg-gold-500/10 ring-1 ring-gold-500/30 rounded-xl p-3 mb-4 text-xs text-parchment-300">
+      আজকের তারিখ বাংলা, ইংরেজি ও হিজরি — তিন ক্যালেন্ডারে একসাথে।
+    </div>
+
+    <div class="bg-gradient-to-br from-ink-800 to-ink-900 ring-1 ring-gold-500/25 rounded-2xl shadow-glow p-6 text-center mb-5">
+      <div id="todayClock" class="text-4xl sm:text-5xl font-bold text-gold-300 tracking-wider font-mono">--:--:--</div>
+      <div id="todayWeekday" class="text-lg text-parchment-200 mt-2">—</div>
+      <button id="todaySpeakBtn" class="no-print mt-3 px-4 py-2 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 text-sm font-semibold btn-glow">🔊 সব তারিখ শুনুন</button>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-4">
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4 text-center">
+        <div class="text-3xl mb-2">🇬🇧</div>
+        <div class="text-xs text-parchment-400 mb-1">ইংরেজি (Gregorian)</div>
+        <div id="todayEnglish" class="text-lg font-bold text-parchment-100">—</div>
+      </div>
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4 text-center">
+        <div class="text-3xl mb-2">🇧🇩</div>
+        <div class="text-xs text-parchment-400 mb-1">বাংলা সন</div>
+        <div id="todayBengali" class="text-lg font-bold text-parchment-100">—</div>
+      </div>
+      <div class="bg-ink-800/70 rounded-2xl shadow-card premium-card ring-1 ring-white/5 p-4 text-center">
+        <div class="text-3xl mb-2">🌙</div>
+        <div class="text-xs text-parchment-400 mb-1">হিজরি (আরবি)</div>
+        <div id="todayHijri" class="text-lg font-bold text-parchment-100">—</div>
+      </div>
+    </div>
+
+    <div class="bg-ink-800/40 ring-1 ring-white/5 rounded-xl p-3 mt-5 text-xs text-parchment-400">
+      ⚠️ হিজরি তারিখ গাণিতিক (tabular) হিসাবের ভিত্তিতে দেখানো হয় — চাঁদ দেখার উপর ভিত্তি করে ঘোষিত প্রকৃত তারিখের সাথে ১ দিন কমবেশি হতে পারে। রমজান/ঈদের মতো গুরুত্বপূর্ণ তারিখের জন্য স্থানীয় চাঁদ দেখা কমিটির ঘোষণা অনুসরণ করুন।
+    </div>
+  </section>
+
 </main>
 
 <script src="js/fonts.js"></script>
@@ -399,6 +435,7 @@
 <script src="js/tab9-bangladesh.js"></script>
 <script src="js/tab10-continents.js"></script>
 <script src="js/tab11-oceans.js"></script>
+<script src="js/tab12-today.js"></script>
 <script src="js/global-search.js"></script>
 <script src="js/voice-input.js"></script>
 <script src="js/favorites-history.js"></script>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tottokosh-cache-v9';
+const CACHE_NAME = 'tottokosh-cache-v10';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -29,6 +29,7 @@ const ASSETS = [
   './js/tab9-bangladesh.js',
   './js/tab10-continents.js',
   './js/tab11-oceans.js',
+  './js/tab12-today.js',
   './js/global-search.js',
   './js/voice-input.js',
   './js/favorites-history.js',
