@@ -23,3 +23,5 @@ document.getElementById('t6Search').addEventListener('input',(e)=>{
   const q=e.target.value.trim().toLowerCase();
   [...t6Body.children].forEach(tr=>{ tr.style.display = tr.dataset.search.includes(q)?'':'none'; });
 });
+
+setupRangeReader('t6RangeFrom','t6RangeTo','t6RangePlay','t6RangeStop', 1, 100, i => [bnWords[i], englishWord(i)]);

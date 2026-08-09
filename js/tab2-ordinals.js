@@ -31,3 +31,5 @@ document.getElementById('t2Search').addEventListener('input',(e)=>{
   const q=e.target.value.trim().toLowerCase();
   [...t2Body.children].forEach(tr=>{ tr.style.display = tr.dataset.search.includes(q)?'':'none'; });
 });
+
+setupRangeReader('t2RangeFrom','t2RangeTo','t2RangePlay','t2RangeStop', 1, 31, i => [bnOrdinalWords[i-1], enOrdinalWords[i-1]]);

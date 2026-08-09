@@ -43,3 +43,5 @@ document.getElementById('t1Search').addEventListener('input', (e)=>{
     tr.style.display = tr.dataset.search.includes(q) ? '' : 'none';
   });
 });
+
+setupRangeReader('t1RangeFrom','t1RangeTo','t1RangePlay','t1RangeStop', 0, 100, i => [bnWords[i], englishWord(i)]);
