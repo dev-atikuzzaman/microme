@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tottokosh-cache-v8';
+const CACHE_NAME = 'tottokosh-cache-v9';
 const ASSETS = [
   './index.html',
   './manifest.json',
@@ -16,6 +16,7 @@ const ASSETS = [
   './js/fonts.js',
   './js/tabs.js',
   './js/tts.js',
+  './js/swipe-gestures.js',
   './js/tab1-numbers.js',
   './js/tab2-ordinals.js',
   './js/tab3-weekdays.js',
