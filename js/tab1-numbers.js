@@ -33,7 +33,7 @@ for(let i=0;i<=100;i++){
   const tr = document.createElement('tr');
   tr.id = `t1-row-${i}`;
   tr.className = i%2===0 ? 'bg-indigo-500/10' : 'bg-ink-800/30';
-  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${i}</td><td class="p-2">${englishWord(i)}</td><td class="p-2">${bnWords[i]}</td><td class="p-2">${toBnDigit(i)}</td>`;
+  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${i}</td><td class="p-2">${englishWord(i)}</td><td class="p-2">${bnWords[i]}</td><td class="p-2">${toBnDigit(i)}</td><td class="p-2 text-center no-print">${ttsBtn(bnWords[i], englishWord(i))}</td>`;
   tr.dataset.search = `${i} ${englishWord(i)} ${bnWords[i]} ${toBnDigit(i)}`.toLowerCase();
   t1Body.appendChild(tr);
 }

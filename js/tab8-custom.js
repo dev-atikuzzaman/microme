@@ -19,7 +19,10 @@ function renderCustom(){
     div.innerHTML = `
       <div class="flex justify-between items-start mb-2">
         <span class="text-xs px-2 py-1 rounded-full bg-pink-500/15 text-pink-300 font-semibold">${item.category||''}</span>
-        <button class="no-print text-red-500 text-sm" onclick="deleteCustom(${idx})">🗑️</button>
+        <div class="flex items-center gap-1 no-print">
+          ${ttsBtn(`${item.title||''}. ${item.text||''}`)}
+          <button class="text-red-500 text-sm" onclick="deleteCustom(${idx})">🗑️</button>
+        </div>
       </div>
       <h4 class="font-bold text-lg mb-1">${item.title||''}</h4>
       <p class="text-sm text-parchment-400 whitespace-pre-wrap mb-2">${item.text||''}</p>

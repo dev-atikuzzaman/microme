@@ -23,7 +23,7 @@ for(let i=1;i<=31;i++){
   const tr = document.createElement('tr');
   tr.id = `t2-row-${i}`;
   tr.className = i%2===0 ? 'bg-rose-500/10' : 'bg-ink-800/30';
-  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${enOrdinalSuffix(i)}</td><td class="p-2">${enOrdinalWords[i-1]}</td><td class="p-2">${bnOrdinalDigit(i)}</td><td class="p-2">${bnOrdinalWords[i-1]}</td>`;
+  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2">${enOrdinalSuffix(i)}</td><td class="p-2">${enOrdinalWords[i-1]}</td><td class="p-2">${bnOrdinalDigit(i)}</td><td class="p-2">${bnOrdinalWords[i-1]}</td><td class="p-2 text-center no-print">${ttsBtn(bnOrdinalWords[i-1], enOrdinalWords[i-1])}</td>`;
   tr.dataset.search = `${i} ${enOrdinalSuffix(i)} ${enOrdinalWords[i-1]} ${bnOrdinalDigit(i)} ${bnOrdinalWords[i-1]}`.toLowerCase();
   t2Body.appendChild(tr);
 }

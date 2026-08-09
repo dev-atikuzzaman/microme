@@ -72,6 +72,7 @@ function fhRowHTML(item){
         <div class="text-parchment-400 text-xs truncate">${item.subtitle}</div>
       </div>
       <button class="fh-star text-base shrink-0 ${starred ? 'text-gold-400' : 'text-parchment-400'}">${starred ? '★' : '☆'}</button>
+      ${ttsBtn(item.title)}
     </div>`;
 }
 
@@ -96,7 +97,7 @@ function renderFavoritesPanel(){
 
   [...document.querySelectorAll('.fh-row')].forEach(el=>{
     el.addEventListener('click', (e)=>{
-      if(e.target.closest('.fh-star')) return;
+      if(e.target.closest('.fh-star') || e.target.closest('.tts-btn')) return;
       navigateToStoredItem(JSON.parse(el.dataset.item));
     });
   });

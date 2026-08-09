@@ -14,16 +14,17 @@ const bnMonths = [["বৈশাখ","মধ্য এপ্রিল - মধ�
 const arMonths = [["মুহাররম","Muharram","২৯/৩০"],["সফর","Safar","২৯/৩০"],["রবিউল আউয়াল","Rabi' al-awwal","২৯/৩০"],["রবিউস সানি","Rabi' al-thani","২৯/৩০"],
 ["জমাদিউল আউয়াল","Jumada al-awwal","২৯/৩০"],["জমাদিউস সানি","Jumada al-thani","২৯/৩০"],["রজব","Rajab","২৯/৩০"],["শাবান","Sha'ban","২৯/৩০"],
 ["রমজান","Ramadan","২৯/৩০"],["শাওয়াল","Shawwal","২৯/৩০"],["জিলক্বদ","Dhu al-Qi'dah","২৯/৩০"],["জিলহজ্জ","Dhu al-Hijjah","২৯/৩০"]];
-function fillMonthTable(bodyId, arr){
+function fillMonthTable(bodyId, arr, speakResolver){
   const tbody = document.getElementById(bodyId);
   arr.forEach((row,idx)=>{
     const tr=document.createElement('tr');
     tr.id = `${bodyId}-row-${idx}`;
     tr.className = idx%2===0?'bg-emerald-500/10':'bg-ink-800/30';
-    tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2 font-semibold">${row[2]}</td>`;
+    const [bnText, enText] = speakResolver(row);
+    tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2 font-semibold">${row[2]}</td><td class="p-2 text-center no-print">${ttsBtn(bnText, enText)}</td>`;
     tbody.appendChild(tr);
   });
 }
-fillMonthTable('t4BodyEn', enMonths);
-fillMonthTable('t4BodyBn', bnMonths);
-fillMonthTable('t4BodyAr', arMonths);
+fillMonthTable('t4BodyEn', enMonths, row => [row[1], row[0]]);
+fillMonthTable('t4BodyBn', bnMonths, row => [row[0], undefined]);
+fillMonthTable('t4BodyAr', arMonths, row => [row[0], row[1]]);

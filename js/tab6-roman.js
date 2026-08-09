@@ -15,7 +15,7 @@ for(let i=1;i<=100;i++){
   const tr=document.createElement('tr');
   tr.id = `t6-row-${i}`;
   tr.className = i%2===0?'bg-purple-500/10':'bg-ink-800/30';
-  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2 font-mono text-lg">${toRoman(i)}</td>`;
+  tr.innerHTML = `<td class="p-2 font-semibold">${i}</td><td class="p-2 font-mono text-lg">${toRoman(i)}</td><td class="p-2 text-center no-print">${ttsBtn(bnWords[i], englishWord(i))}</td>`;
   tr.dataset.search = `${i} ${toRoman(i)}`.toLowerCase();
   t6Body.appendChild(tr);
 }

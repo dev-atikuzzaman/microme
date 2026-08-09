@@ -202,6 +202,7 @@ function gsRenderResults(results, query){
         <div class="text-parchment-400 text-xs truncate">${r.subtitle}</div>
       </div>
       <button class="gs-star text-base shrink-0 ${starred ? 'text-gold-400' : 'text-parchment-400'}" data-gs-idx="${i}">${starred ? '★' : '☆'}</button>
+      ${ttsBtn(r.title)}
       <span class="text-[10px] text-gold-400 bg-gold-500/10 ring-1 ring-gold-500/20 rounded-full px-2 py-0.5 shrink-0">${r.tabLabel}</span>
     </div>`;
   }).join('');
@@ -209,7 +210,7 @@ function gsRenderResults(results, query){
 
   [...gsResultsBox.querySelectorAll('.gs-result-item')].forEach(el=>{
     el.addEventListener('click', (e)=>{
-      if(e.target.closest('.gs-star')) return;
+      if(e.target.closest('.gs-star') || e.target.closest('.tts-btn')) return;
       const item = gsCurrentResults[Number(el.dataset.gsIdx)];
       gsCloseResults();
       gsInput.blur();
