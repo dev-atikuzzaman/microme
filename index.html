@@ -110,6 +110,7 @@
       <button data-tab="t10" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🌍</span><span class="text-xs sm:text-sm">মহাদেশ ও দেশ</span></button>
       <button data-tab="t11" class="tab-btn flex-1 min-w-[110px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>🌊</span><span class="text-xs sm:text-sm">মহাসাগর</span></button>
       <button data-tab="t12" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>📆</span><span class="text-xs sm:text-sm">আজকের তারিখ</span></button>
+      <button data-tab="t13" class="tab-btn flex-1 min-w-[130px] px-3 py-2.5 rounded-xl font-semibold text-parchment-200 bg-ink-800/60 ring-1 ring-white/5 hover:bg-ink-800 hover:text-gold-300 transition flex items-center justify-center gap-1.5"><span>Ω</span><span class="text-xs sm:text-sm">প্রতীক ও লিপি</span></button>
     </div>
   </nav>
   <p id="swipeHint" class="no-print text-center text-[10px] text-parchment-400/70 pb-1.5 sm:hidden">👈 বাম-ডানে সোয়াইপ করে ট্যাব বদলান 👉</p>
@@ -417,6 +418,15 @@
     </div>
   </section>
 
+  <!-- ================= TAB 13: SYMBOLS & SCRIPTS ================= -->
+  <section id="t13" class="tab-panel hidden">
+    <div class="bg-gold-500/10 ring-1 ring-gold-500/30 rounded-xl p-3 mb-4 text-xs text-parchment-300">
+      বিভিন্ন লিপি, গাণিতিক/বৈজ্ঞানিক প্রতীক, মুদ্রা চিহ্ন ও বিশেষ সংকেতের রেফারেন্স — প্রতিটির পাশে 🔊 উচ্চারণ ও 📋 কপি বাটন আছে।
+    </div>
+    <div id="symCategoryBar" class="no-print flex flex-wrap gap-2 mb-4"></div>
+    <div id="symGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+  </section>
+
 </main>
 
 <script src="js/fonts.js"></script>
@@ -437,6 +447,7 @@
 <script src="js/tab10-continents.js"></script>
 <script src="js/tab11-oceans.js"></script>
 <script src="js/tab12-today.js"></script>
+<script src="js/tab13-symbols.js"></script>
 <script src="js/global-search.js"></script>
 <script src="js/voice-input.js"></script>
 <script src="js/favorites-history.js"></script>
