@@ -10,6 +10,33 @@ const symbolCategories = {
   "ভাষাগত লিপি": {
     icon: "🔤",
     groups: {
+      "বাংলা স্বরবর্ণ (Bengali Vowels)": [
+        ["অ","অ","a (short)"], ["আ","আ","aa (long)"], ["ই","ই","i (short)"], ["ঈ","ই-দীর্ঘ","ii (long)"],
+        ["উ","উ","u (short)"], ["ঊ","উ-দীর্ঘ","uu (long)"], ["ঋ","ঋ","ri"], ["এ","এ","e"],
+        ["ঐ","ঐ","oi"], ["ও","ও","o"], ["ঔ","ঔ","ou"]
+      ],
+      "বাংলা ব্যঞ্জনবর্ণ (Bengali Consonants)": [
+        ["ক","ক","ka"], ["খ","খ","kha"], ["গ","গ","ga"], ["ঘ","ঘ","gha"], ["ঙ","ঙ","nga"],
+        ["চ","চ","cha"], ["ছ","ছ","chha"], ["জ","জ","ja"], ["ঝ","ঝ","jha"], ["ঞ","ঞ","nya"],
+        ["ট","ট","ta (hard)"], ["ঠ","ঠ","tha (hard)"], ["ড","ড","da (hard)"], ["ঢ","ঢ","dha (hard)"], ["ণ","ণ","na (hard)"],
+        ["ত","ত","ta"], ["থ","থ","tha"], ["দ","দ","da"], ["ধ","ধ","dha"], ["ন","ন","na"],
+        ["প","প","pa"], ["ফ","ফ","pha"], ["ব","ব","ba"], ["ভ","ভ","bha"], ["ম","ম","ma"],
+        ["য","য","ya"], ["র","র","ra"], ["ল","ল","la"], ["শ","শ","sha"], ["ষ","ষ","sha (retroflex)"],
+        ["স","স","sa"], ["হ","হ","ha"], ["ড়","ড়","ra (flap)"], ["ঢ়","ঢ়","rha (flap)"], ["য়","য়","ya (semi-vowel)"],
+        ["ৎ","খণ্ড ত","khanda ta"], ["ং","অনুস্বার","anusvara (ng)"], ["ঃ","বিসর্গ","visarga (h)"], ["ঁ","চন্দ্রবিন্দু","chandrabindu (nasal)"]
+      ],
+      "ইংরেজি বর্ণমালা (English Alphabet)": [
+        ["A a","এ","A"], ["B b","বি","B"], ["C c","সি","C"], ["D d","ডি","D"], ["E e","ই","E"],
+        ["F f","এফ","F"], ["G g","জি","G"], ["H h","এইচ","H"], ["I i","আই","I"], ["J j","জে","J"],
+        ["K k","কে","K"], ["L l","এল","L"], ["M m","এম","M"], ["N n","এন","N"], ["O o","ও","O"],
+        ["P p","পি","P"], ["Q q","কিউ","Q"], ["R r","আর","R"], ["S s","এস","S"], ["T t","টি","T"],
+        ["U u","ইউ","U"], ["V v","ভি","V"], ["W w","ডাবলিউ","W"], ["X x","এক্স","X"], ["Y y","ওয়াই","Y"], ["Z z","জেড","Z"]
+      ],
+      "অংক ০-৯ (Digits)": [
+        ["০ / 0","শূন্য","Zero"], ["১ / 1","এক","One"], ["২ / 2","দুই","Two"], ["৩ / 3","তিন","Three"],
+        ["৪ / 4","চার","Four"], ["৫ / 5","পাঁচ","Five"], ["৬ / 6","ছয়","Six"], ["৭ / 7","সাত","Seven"],
+        ["৮ / 8","আট","Eight"], ["৯ / 9","নয়","Nine"]
+      ],
       "গ্রিক বর্ণমালা (Greek)": [
         ["Α α","আলফা","Alpha"], ["Β β","বিটা","Beta"], ["Γ γ","গামা","Gamma"], ["Δ δ","ডেল্টা","Delta"],
         ["Ε ε","এপসাইলন","Epsilon"], ["Ζ ζ","জিটা","Zeta"], ["Η η","ইটা","Eta"], ["Θ θ","থিটা","Theta"],
@@ -129,8 +156,18 @@ const symbolCategories = {
 };
 
 const symCategoryBar = document.getElementById('symCategoryBar');
+const symRangeReaders = document.getElementById('symRangeReaders');
 const symGrid = document.getElementById('symGrid');
 let symActiveCategory = Object.keys(symbolCategories)[0];
+
+/* Sub-groups (within ভাষাগত লিপি) that get a "read from letter X to letter Y"
+   TTS control — specifically the ones the user asked for by name. */
+const RANGE_READABLE_GROUPS = [
+  "বাংলা স্বরবর্ণ (Bengali Vowels)",
+  "বাংলা ব্যঞ্জনবর্ণ (Bengali Consonants)",
+  "ইংরেজি বর্ণমালা (English Alphabet)",
+  "অংক ০-৯ (Digits)"
+];
 
 function renderSymCategoryBar(){
   symCategoryBar.innerHTML = Object.entries(symbolCategories).map(([name, cat])=>`
@@ -143,8 +180,53 @@ function renderSymCategoryBar(){
     btn.addEventListener('click', ()=>{
       symActiveCategory = btn.dataset.cat;
       renderSymCategoryBar();
+      renderSymRangeReaders();
       renderSymGrid();
     });
+  });
+}
+
+/* Renders one "শুরু বর্ণ ... শেষ বর্ণ ... ▶️ পড়ুন" widget for a given letter group.
+   Lets the user pick the exact starting and ending character (dropdowns show
+   the actual glyphs), then reads that whole range aloud back-to-back. */
+function buildLetterRangeWidget(groupName, items){
+  const safeId = groupName.replace(/[^a-zA-Z0-9]/g, '');
+  const wrap = document.createElement('div');
+  wrap.className = 'bg-ink-800/40 ring-1 ring-white/5 rounded-xl p-2.5 flex flex-wrap items-center gap-2';
+  wrap.innerHTML = `
+    <span class="text-xs text-parchment-300 shrink-0">🔊 ${groupName}:</span>
+    <select id="symFrom_${safeId}" class="px-2 py-1 rounded-lg text-sm"></select>
+    <span class="text-parchment-400 text-xs">থেকে</span>
+    <select id="symTo_${safeId}" class="px-2 py-1 rounded-lg text-sm"></select>
+    <button id="symPlay_${safeId}" class="px-3 py-1.5 bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 rounded-lg text-xs font-semibold btn-glow">▶️ পড়ুন</button>
+    <button id="symStop_${safeId}" class="px-3 py-1.5 bg-ink-800 text-parchment-200 ring-1 ring-white/10 rounded-lg text-xs btn-glow">⏹ থামান</button>
+  `;
+  symRangeReaders.appendChild(wrap);
+
+  const fromSel = wrap.querySelector(`#symFrom_${safeId}`);
+  const toSel = wrap.querySelector(`#symTo_${safeId}`);
+  items.forEach((item, i)=>{
+    fromSel.appendChild(new Option(item[0], i));
+    toSel.appendChild(new Option(item[0], i));
+  });
+  toSel.value = items.length - 1; // default: read the whole group
+
+  wrap.querySelector(`#symPlay_${safeId}`).addEventListener('click', ()=>{
+    let from = parseInt(fromSel.value), to = parseInt(toSel.value);
+    if(from > to) [from, to] = [to, from]; // auto-swap if picked backwards
+    stopSpeaking();
+    for(let i=from; i<=to; i++){
+      queueSpeakItem(items[i][1], items[i][2]);
+    }
+  });
+  wrap.querySelector(`#symStop_${safeId}`).addEventListener('click', stopSpeaking);
+}
+
+function renderSymRangeReaders(){
+  symRangeReaders.innerHTML = '';
+  const cat = symbolCategories[symActiveCategory];
+  RANGE_READABLE_GROUPS.forEach(groupName=>{
+    if(cat.groups[groupName]) buildLetterRangeWidget(groupName, cat.groups[groupName]);
   });
 }
 
@@ -170,6 +252,7 @@ function renderSymGrid(){
 }
 
 renderSymCategoryBar();
+renderSymRangeReaders();
 renderSymGrid();
 
 /* Flattened lookup used by global search so every symbol is individually
@@ -190,6 +273,7 @@ function getSymbolSearchEntries(){
 function gsGoToSymbol(catName){
   symActiveCategory = catName;
   renderSymCategoryBar();
+  renderSymRangeReaders();
   renderSymGrid();
   goToTab('t13');
   setTimeout(()=> flashHighlight(document.getElementById('symGrid')), 120);
