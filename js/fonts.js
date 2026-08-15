@@ -51,10 +51,6 @@ document.getElementById('printBtn').addEventListener('click', ()=> window.print(
 /* ============================================================
    UNLIMITED CUSTOM FONT UPLOAD SYSTEM (no Android system install needed)
 ============================================================ */
-const fontManagerBtn = document.getElementById('fontManagerBtn');
-const fontManagerPanel = document.getElementById('fontManagerPanel');
-fontManagerBtn.addEventListener('click', ()=> fontManagerPanel.classList.toggle('hidden'));
-
 const CUSTOM_FONTS_KEY = 'customFontsListV2';
 
 function loadCustomFontsList(){

@@ -25,11 +25,10 @@ const SYNC_KEYS = {
 };
 
 function setSyncStatus(online){
-  const dot = document.getElementById('syncDot');
-  const label = document.getElementById('syncLabel');
-  if(!dot || !label) return;
-  if(online){ dot.classList.remove('offline'); label.textContent = 'ক্লাউড সিঙ্ক সক্রিয়'; }
-  else { dot.classList.add('offline'); label.textContent = 'লোকাল মোড'; }
+  const dots = document.querySelectorAll('.sync-dot');
+  const labels = document.querySelectorAll('.sync-label');
+  dots.forEach(dot=> dot.classList.toggle('offline', !online));
+  labels.forEach(label=> label.textContent = online ? 'ক্লাউড সিঙ্ক সক্রিয়' : 'লোকাল মোড');
 }
 
 async function cloudPush(key, value){
