@@ -467,6 +467,28 @@
 
 </main>
 
+<!-- ===================== AI ASK (floating chat) ===================== -->
+<button id="aiAskFab" title="AI-কে জিজ্ঞাসা করুন" class="no-print fixed z-40 right-4 bottom-20 w-14 h-14 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 text-2xl shadow-glow flex items-center justify-center ring-2 ring-ink-950/40 btn-glow">✨</button>
+
+<div id="aiAskOverlay" class="hidden no-print fixed inset-0 z-40 bg-black/60"></div>
+<div id="aiAskPanel" class="hidden no-print fixed z-50 inset-x-0 bottom-0 max-w-7xl mx-auto rounded-t-3xl bg-ink-900 ring-1 ring-gold-500/25 shadow-2xl flex flex-col" style="height:78vh;">
+  <div class="flex items-center gap-2.5 px-4 py-3 border-b border-white/5 shrink-0">
+    <span class="text-xl">✨</span>
+    <div class="min-w-0">
+      <h3 class="font-bold text-gold-300 text-sm">AI-কে জিজ্ঞাসা করুন</h3>
+      <p class="text-[11px] text-parchment-400">যেকোনো প্রশ্ন লিখুন — সংখ্যা, তারিখ, সাধারণ জ্ঞান, যা খুশি</p>
+    </div>
+    <button id="aiAskClose" class="ml-auto w-8 h-8 rounded-lg bg-ink-800/70 ring-1 ring-white/10 text-parchment-300 hover:text-gold-300 flex items-center justify-center shrink-0">✕</button>
+  </div>
+  <div id="aiAskThread" class="flex-1 overflow-y-auto px-4 py-3">
+    <p id="aiAskEmpty" class="text-center text-parchment-500 text-xs mt-8 leading-relaxed">যেমন জিজ্ঞাসা করতে পারেন:<br>"৭২ রোমান সংখ্যায় কী?" • "আজ বাংলা কত তারিখ?" • "আরবি মাসের নাম কী কী?"</p>
+  </div>
+  <form id="aiAskForm" class="flex items-center gap-2 px-3 py-3 border-t border-white/5 shrink-0">
+    <input id="aiAskInput" type="text" autocomplete="off" placeholder="আপনার প্রশ্ন লিখুন..." class="flex-1 rounded-xl px-3.5 py-2.5 text-sm">
+    <button id="aiAskSend" type="submit" title="পাঠান" class="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 text-ink-950 font-bold flex items-center justify-center btn-glow">➤</button>
+  </form>
+</div>
+
 <!-- ===================== BOTTOM NAVIGATION ===================== -->
 <nav id="bottomNav" class="no-print fixed bottom-0 inset-x-0 z-40 border-t border-white/5 shadow-lg">
   <div class="max-w-7xl mx-auto grid grid-cols-4">
@@ -507,6 +529,7 @@
 <script src="js/voice-input.js"></script>
 <script src="js/favorites-history.js"></script>
 <script src="js/cloud-sync.js"></script>
+<script src="js/ai-ask.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
