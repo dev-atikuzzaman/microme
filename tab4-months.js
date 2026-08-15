@@ -1,0 +1,30 @@
+// ============================================================
+// Tab 4: English/Bengali/Arabic months with day counts
+// ============================================================
+/* ============================================================
+   TAB 4: MONTHS
+============================================================ */
+const enMonths = [["January","জানুয়ারি","৩১"],["February","ফেব্রুয়ারি","২৮/২৯*"],["March","মার্চ","৩১"],["April","এপ্রিল","৩০"],
+["May","মে","৩১"],["June","জুন","৩০"],["July","জুলাই","৩১"],["August","আগস্ট","৩১"],["September","সেপ্টেম্বর","৩০"],
+["October","অক্টোবর","৩১"],["November","নভেম্বর","৩০"],["December","ডিসেম্বর","৩১"]];
+const bnMonths = [["বৈশাখ","মধ্য এপ্রিল - মধ্য মে","৩১"],["জ্যৈষ্ঠ","মধ্য মে - মধ্য জুন","৩১"],["আষাঢ়","মধ্য জুন - মধ্য জুলাই","৩১"],
+["শ্রাবণ","মধ্য জুলাই - মধ্য আগস্ট","৩১"],["ভাদ্র","মধ্য আগস্ট - মধ্য সেপ্টেম্বর","৩১"],["আশ্বিন","মধ্য সেপ্টেম্বর - মধ্য অক্টোবর","৩১"],
+["কার্তিক","মধ্য অক্টোবর - মধ্য নভেম্বর","৩০"],["অগ্রহায়ণ","মধ্য নভেম্বর - মধ্য ডিসেম্বর","৩০"],["পৌষ","মধ্য ডিসেম্বর - মধ্য জানুয়ারি","৩০"],
+["মাঘ","মধ্য জানুয়ারি - মধ্য ফেব্রুয়ারি","৩০"],["ফাল্গুন","মধ্য ফেব্রুয়ারি - মধ্য মার্চ","৩০/৩১*"],["চৈত্র","মধ্য মার্চ - মধ্য এপ্রিল","৩০"]];
+const arMonths = [["মুহাররম","Muharram","২৯/৩০"],["সফর","Safar","২৯/৩০"],["রবিউল আউয়াল","Rabi' al-awwal","২৯/৩০"],["রবিউস সানি","Rabi' al-thani","২৯/৩০"],
+["জমাদিউল আউয়াল","Jumada al-awwal","২৯/৩০"],["জমাদিউস সানি","Jumada al-thani","২৯/৩০"],["রজব","Rajab","২৯/৩০"],["শাবান","Sha'ban","২৯/৩০"],
+["রমজান","Ramadan","২৯/৩০"],["শাওয়াল","Shawwal","২৯/৩০"],["জিলক্বদ","Dhu al-Qi'dah","২৯/৩০"],["জিলহজ্জ","Dhu al-Hijjah","২৯/৩০"]];
+function fillMonthTable(bodyId, arr, speakResolver){
+  const tbody = document.getElementById(bodyId);
+  arr.forEach((row,idx)=>{
+    const tr=document.createElement('tr');
+    tr.id = `${bodyId}-row-${idx}`;
+    tr.className = idx%2===0?'bg-emerald-500/10':'bg-ink-800/30';
+    const [bnText, enText] = speakResolver(row);
+    tr.innerHTML = `<td class="p-2 font-semibold">${idx+1}</td><td class="p-2">${row[0]}</td><td class="p-2">${row[1]}</td><td class="p-2 font-semibold">${row[2]}</td><td class="p-2 text-center no-print">${ttsBtn(bnText, enText)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+fillMonthTable('t4BodyEn', enMonths, row => [row[1], row[0]]);
+fillMonthTable('t4BodyBn', bnMonths, row => [row[0], undefined]);
+fillMonthTable('t4BodyAr', arMonths, row => [row[0], row[1]]);
