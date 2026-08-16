@@ -18,7 +18,7 @@ const TAB_META = {
   t10: { icon:'🌍',  label:'মহাদেশ ও দেশ',              hint:'৭ মহাদেশের দেশ',                color:'from-cyan-500 to-cyan-700' },
   t11: { icon:'🌊',  label:'মহাসাগর',                   hint:'৫টি মহাসাগর',                   color:'from-blue-500 to-blue-700' },
   t12: { icon:'📆',  label:'আজকের তারিখ',               hint:'ইং/বাং/হিজরি একসাথে',           color:'from-gold-400 to-gold-600' },
-  t13: { icon:'Ω',   label:'প্রতীক ও লিপি',             hint:'গাণিতিক ও মুদ্রা প্রতীক',        color:'from-orange-500 to-amber-700' },
+  t13: { icon:'অ',   label:'বর্ণমালা',                   hint:'বাংলা, ইংরেজি, আরবি ও অংক',     color:'from-orange-500 to-amber-700' },
 };
 const TAB_ORDER = Object.keys(TAB_META);
 const EXTRA_META = { settings: { icon:'⚙️', label:'সেটিংস' } };
